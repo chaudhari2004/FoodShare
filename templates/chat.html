@@ -1,0 +1,162 @@
+
+{% extends "base.html" %}
+
+{% block title %}Chat with {{ chat[5] if current_user_id == chat[3] else chat[6] }} | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="chat-page live-chat-page"
+         id="foodshare-chat"
+         data-conversation-id="{{ chat[0] }}"
+         data-current-user-id="{{ current_user_id }}">
+
+    <!-- Chat Header -->
+    <header class="live-chat-header">
+        <a class="chat-back-link"
+           href="{{ url_for('my_chats') }}"
+           aria-label="Back to chats">←</a>
+
+        <div class="conversation-avatar" aria-hidden="true">
+            {{ (chat[5] if current_user_id == chat[3] else chat[6])[:1]|upper }}
+        </div>
+
+        <div class="live-chat-person">
+            <h1>{{ chat[5] if current_user_id == chat[3] else chat[6] }}</h1>
+            <p>{{ chat[4] }} · {{ chat[7]|title }} request</p>
+        </div>
+
+        <span class="live-status">
+            <span></span> Chat
+        </span>
+    </header>
+
+    <!-- Food Details -->
+    <div class="chat-food-context">
+        <span aria-hidden="true">🍲</span>
+        <div>
+            <small>ABOUT THIS DONATION</small>
+            <strong>{{ chat[2] }}</strong>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-message-list"
+         id="chat-message-list"
+         aria-live="polite"
+         aria-label="Chat messages">
+
+        {% for message in messages %}
+        <article class="chat-message {% if message[1] == current_user_id %}message-own{% else %}message-other{% endif %}"
+                 data-message-id="{{ message[0] }}">
+
+            {% if message[1] != current_user_id %}
+            <span class="message-sender">{{ message[2] }}</span>
+            {% endif %}
+
+            {% if message[3] %}
+            <p class="message-bubble">{{ message[3] }}</p>
+            {% endif %}
+
+            {% if message|length > 5 and message[5] %}
+            <a class="chat-image-link"
+               href="{{ message[5] }}"
+               target="_blank"
+               rel="noopener noreferrer">
+
+                <img class="chat-message-image"
+                     src="{{ message[5] }}"
+                     alt="Image shared in chat"
+                     loading="lazy">
+            </a>
+            {% endif %}
+
+            <time class="message-time">
+                {{ message[4].strftime('%d %b, %I:%M %p') if message[4] else '' }}
+            </time>
+        </article>
+
+        {% else %}
+        <div class="chat-first-message" id="chat-first-message">
+            <span aria-hidden="true">👋</span>
+            <p>Conversation started! Send a message to coordinate the food pickup.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Error Messages -->
+    <div class="chat-error"
+         id="chat-error"
+         role="status"
+         hidden></div>
+
+    <!-- Selected Image Preview -->
+    <div class="chat-selected-image"
+         id="chat-image-preview"
+         hidden>
+
+        <img id="chat-image-preview-img"
+             src=""
+             alt="Selected image preview">
+
+        <div class="chat-selected-image-info">
+            <span id="chat-image-file-name"></span>
+
+            <button type="button"
+                    id="chat-remove-image"
+                    aria-label="Remove selected image"
+                    title="Remove image">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Message Composer -->
+    <form class="chat-composer"
+          id="chat-form"
+          autocomplete="off">
+
+        <input type="file"
+               id="chat-image-input"
+               name="image"
+               accept="image/jpeg,image/png,image/webp"
+               hidden>
+
+        <button type="button"
+                class="chat-image-button"
+                id="chat-image-button"
+                aria-label="Attach an image"
+                title="Attach image">
+            <span aria-hidden="true">📎</span>
+        </button>
+
+        <label class="sr-only" for="chat-input">
+            Write a message
+        </label>
+
+        <textarea id="chat-input"
+                  name="message"
+                  rows="1"
+                  maxlength="2000"
+                  placeholder="Write a message…"></textarea>
+
+        <button type="submit" id="chat-send-button">
+            <span>Send</span>
+            <span aria-hidden="true">➤</span>
+        </button>
+    </form>
+
+    <p class="chat-security-note">
+        Keep pickup arrangements respectful. Never share passwords or sensitive account details.
+    </p>
+</section>
+
+<!-- Socket.IO -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+        crossorigin="anonymous"></script>
+
+<!-- Chat JavaScript -->
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

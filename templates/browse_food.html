@@ -1,0 +1,240 @@
+
+{% extends "base.html" %}
+
+{% block title %}Browse Food | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/browse_food.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="browse-food-page">
+
+    <header class="browse-food-header">
+        <p class="browse-eyebrow">FOODSHARE / RECIPIENT</p>
+        <h1>Available Food 🍱</h1>
+        <p>Discover food shared by your community.</p>
+    </header>
+
+    <!-- SEARCH AND FILTERS -->
+    <section class="food-filter-section">
+        <form action="{{ url_for('browse_food') }}"
+              method="GET"
+              class="food-filter-form">
+
+            <div class="food-filter-group food-search-group">
+                <label for="foodSearch">Search Food</label>
+                <input
+                    type="search"
+                    id="foodSearch"
+                    name="search"
+                    value="{{ search_query|default('') }}"
+                    placeholder="Food name or location..."
+                    maxlength="100">
+            </div>
+
+            <div class="food-filter-group">
+                <label for="categoryFilter">Category</label>
+                <select id="categoryFilter" name="category">
+                    <option value="">All Categories</option>
+                    {% for item in categories|default([]) %}
+                    <option value="{{ item }}"
+                        {% if selected_category|default('') == item %}selected{% endif %}>
+                        {{ item }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="food-filter-group">
+                <label for="donationTypeFilter">Donation Type</label>
+                <select id="donationTypeFilter" name="donation_type">
+                    <option value="">All Food</option>
+                    <option value="free"
+                        {% if selected_donation_type|default('') == 'free' %}selected{% endif %}>
+                        Free Food
+                    </option>
+                    <option value="paid"
+                        {% if selected_donation_type|default('') == 'paid' %}selected{% endif %}>
+                        Paid Food
+                    </option>
+                </select>
+            </div>
+
+            <div class="food-filter-actions">
+                <button type="submit" class="food-filter-submit">
+                    Search Food
+                </button>
+                <a href="{{ url_for('browse_food') }}"
+                   class="food-filter-clear">
+                    Clear Filters
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <!-- RESULTS -->
+    <div class="food-results-header">
+        <h2>
+            {% if search_query or selected_category or selected_donation_type %}
+                Search Results
+            {% else %}
+                Explore Available Food
+            {% endif %}
+        </h2>
+        <span class="food-results-label">
+            {{ foods|length }} listing{% if foods|length != 1 %}s{% endif %}
+        </span>
+    </div>
+
+    {% if foods %}
+    <div class="food-listings-grid">
+
+        {% for food in foods %}
+        {% set donation_type = food[10] if food|length > 10 and food[10] else 'free' %}
+        {% set price = food[11]|float if food|length > 11 and food[11] is not none else 0 %}
+        {% set category = food[12] if food|length > 12 and food[12] else 'Other' %}
+        {% set total_price = food[3]|float * price %}
+
+        <article class="food-listing-card">
+
+            <a href="{{ url_for('food_details', food_id=food[0]) }}"
+               class="food-card-image-link">
+
+                {% if food[8] %}
+                <img
+                    src="{{ url_for('static', filename='uploads/foods/' ~ food[8]) }}"
+                    alt="{{ food[1] }}"
+                    class="food-listing-image"
+                    loading="lazy">
+                {% else %}
+                <div class="food-listing-placeholder">
+                    <span>🍲</span>
+                    <p>No photo available</p>
+                </div>
+                {% endif %}
+
+                <span class="food-image-badge {{ 'paid-image-badge' if donation_type == 'paid' else 'free-image-badge' }}">
+                    {{ 'PAID FOOD' if donation_type == 'paid' else 'FREE DONATION' }}
+                </span>
+            </a>
+
+            <div class="food-listing-details">
+
+                <span class="food-category-badge">🍽️ {{ category }}</span>
+
+                <div class="food-card-title-row">
+                    <h3>
+                        <a href="{{ url_for('food_details', food_id=food[0]) }}"
+                           class="food-title-link">
+                            {{ food[1] }}
+                        </a>
+                    </h3>
+                    <span class="food-status status-{{ food[7]|lower }}">
+                        {{ food[7]|title }}
+                    </span>
+                </div>
+
+                <p class="food-description">
+                    {{ food[2] or "No description provided." }}
+                </p>
+
+                <section class="food-price-panel">
+                    <div class="food-price-heading">
+                        <span class="food-info-label">Donation Type</span>
+                        <span class="food-price-badge {{ 'paid' if donation_type == 'paid' else 'free' }}">
+                            {{ '₹ PAID FOOD' if donation_type == 'paid' else '✓ FREE FOOD' }}
+                        </span>
+                    </div>
+
+                    {% if donation_type == 'paid' %}
+                    <div class="food-unit-price">
+                        ₹{{ "%.2f"|format(price) }}
+                        <span class="food-unit-suffix">/ {{ food[4] }}</span>
+                    </div>
+
+                    <div class="food-total-price">
+                        <span>Total listing value</span>
+                        <strong>₹{{ "%.2f"|format(total_price) }}</strong>
+                    </div>
+
+                    <p class="food-price-note">
+                        Estimated price for the full available quantity.
+                    </p>
+                    {% else %}
+                    <div class="food-unit-price">
+                        ₹0.00
+                        <span class="food-unit-suffix">/ {{ food[4] }}</span>
+                    </div>
+                    <div class="food-total-price">
+                        <span>Total cost</span>
+                        <strong>FREE</strong>
+                    </div>
+                    <p class="food-price-note">
+                        This food is offered free of charge.
+                    </p>
+                    {% endif %}
+                </section>
+
+                <div class="food-info-row">
+                    <span class="food-info-icon">📦</span>
+                    <div>
+                        <span class="food-info-label">Available Quantity</span>
+                        <strong>{{ food[3] }} {{ food[4] }}</strong>
+                    </div>
+                </div>
+
+                <div class="food-info-row">
+                    <span class="food-info-icon">📍</span>
+                    <div>
+                        <span class="food-info-label">Pickup Location</span>
+                        <strong>{{ food[5] or "Location not provided" }}</strong>
+                    </div>
+                </div>
+
+                <div class="food-info-row">
+                    <span class="food-info-icon">⏰</span>
+                    <div>
+                        <span class="food-info-label">Expiry</span>
+                        <strong>{{ food[6] or "Not specified" }}</strong>
+                    </div>
+                </div>
+
+                {% if food|length > 9 and food[9] %}
+                <div class="food-donor-info">
+                    <span class="donor-avatar">👤</span>
+                    <div>
+                        <span class="food-info-label">Shared by</span>
+                        <strong>{{ food[9] }}</strong>
+                    </div>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('food_details', food_id=food[0]) }}"
+                   class="view-food-button">
+                    View Details <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+        </article>
+        {% endfor %}
+
+    </div>
+    {% else %}
+    <div class="no-food-message">
+        <div class="empty-food-icon">🍽️</div>
+        <h3>No matching food found</h3>
+        <p>Try another search or change your selected filters.</p>
+        <a href="{{ url_for('browse_food') }}" class="empty-back-button">
+            Clear Filters
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="browse-back-link">
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </div>
+
+</section>
+{% endblock %}

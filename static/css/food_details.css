@@ -1,0 +1,1177 @@
+
+/* ==========================================
+   FOODSHARE - MODERN FOOD DETAILS UI
+========================================== */
+
+.food-details-page {
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 28px clamp(16px, 3vw, 40px) 48px;
+    color: #1f2937;
+    box-sizing: border-box;
+}
+
+.food-details-page *,
+.food-details-page *::before,
+.food-details-page *::after {
+    box-sizing: border-box;
+}
+
+/* Page heading */
+
+.details-page-header {
+    margin-bottom: 28px;
+    padding: 28px 30px;
+    background: linear-gradient(135deg, #ecfdf3, #f8fafc);
+    border: 1px solid #dcefe2;
+    border-radius: 20px;
+}
+
+.details-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    color: #166534;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.details-back-link:hover {
+    color: #14532d;
+    text-decoration: underline;
+}
+
+.details-eyebrow {
+    margin: 0 0 10px;
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.details-page-header h1 {
+    margin: 0 0 12px;
+    color: #163526;
+    font-size: clamp(27px, 3vw, 38px);
+    line-height: 1.2;
+    letter-spacing: -0.8px;
+}
+
+.details-page-header > p:last-child {
+    margin: 0;
+    max-width: 650px;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* Main card arrangement:
+   Food details on left.
+   Donor and request cards on right.
+*/
+
+.food-details-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    grid-template-areas:
+        "food donor"
+        "food request";
+    align-items: start;
+    gap: 24px;
+}
+
+.food-main-card {
+    grid-area: food;
+}
+
+.donor-details-card {
+    grid-area: donor;
+}
+
+.request-details-card {
+    grid-area: request;
+}
+
+/* Shared card styling */
+
+.details-card {
+    min-width: 0;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.045);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.details-card:hover {
+    border-color: #cde8d4;
+    box-shadow: 0 9px 28px rgba(15, 23, 42, 0.075);
+}
+
+.details-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 22px;
+}
+
+.details-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    background: #ecfdf3;
+    border: 1px solid #d1fae5;
+    border-radius: 14px;
+    font-size: 23px;
+}
+
+.details-card-heading h2 {
+    margin: 0 0 5px;
+    color: #173b29;
+    font-size: 19px;
+    line-height: 1.3;
+}
+
+.details-card-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Food image */
+
+.details-food-image {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background: #f1f5f9;
+    border-radius: 14px;
+}
+
+.details-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+}
+
+.details-image-placeholder span {
+    font-size: 42px;
+}
+
+.details-image-placeholder p {
+    margin: 10px 0 0;
+}
+
+/* Food title and status */
+
+.details-food-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0 10px;
+}
+
+.details-food-title-row h3 {
+    margin: 0;
+    color: #172b22;
+    font-size: 27px;
+    overflow-wrap: anywhere;
+}
+
+.details-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #f0fdf4;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.details-status.status-reserved {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.details-status.status-collected,
+.details-status.status-expired {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.details-description {
+    margin: 0 0 22px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+/* Price panels */
+
+.details-price-panel,
+.request-price-panel {
+    margin: 20px 0;
+    padding: 19px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+.details-price-panel {
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+    border-color: #d1fae5;
+}
+
+.details-price-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.details-price-heading small,
+.request-price-panel > small {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.details-price-badge {
+    display: inline-flex;
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.details-price-badge.paid {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.details-price-badge.free {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.details-price-label {
+    margin: 18px 0 4px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.details-unit-price {
+    margin-top: 12px;
+    color: #166534;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.details-unit-price span {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.details-total-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #dcefe2;
+}
+
+.details-total-price span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.details-total-price strong {
+    color: #173b29;
+    font-size: 17px;
+}
+
+.details-price-note {
+    margin: 12px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.request-price-value {
+    margin-top: 12px;
+    color: #166534;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.request-price-panel p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.free-price {
+    margin-top: 10px;
+    color: #15803d;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+/* Food information rows */
+
+.details-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin-top: 12px;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #edf0f2;
+    border-radius: 12px;
+}
+
+.details-info-item > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    background: #f0fdf4;
+    border-radius: 10px;
+    font-size: 17px;
+}
+
+.details-info-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.details-info-item small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.details-info-item strong {
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.paid-donation-note,
+.free-donation-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.paid-donation-note {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.free-donation-note {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+/* Donor profile */
+
+.donor-profile {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #f0fdf4, #f8fafc);
+    border: 1px solid #dcfce7;
+    border-radius: 15px;
+}
+
+.donor-profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 66px;
+    margin: 0 auto 12px;
+    background: #ffffff;
+    border: 1px solid #d1fae5;
+    border-radius: 50%;
+    font-size: 30px;
+}
+
+.donor-profile h3 {
+    margin: 0;
+    color: #173b29;
+    font-size: 19px;
+    overflow-wrap: anywhere;
+}
+
+.donor-profile p {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Donor rating */
+
+.donor-rating-summary {
+    margin: 18px 0;
+    padding: 17px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 13px;
+}
+
+.donor-rating-summary h3 {
+    margin: 0 0 10px;
+    color: #78350f;
+    font-size: 15px;
+}
+
+.rating-summary-value {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.rating-summary-value > strong {
+    color: #92400e;
+    font-size: 29px;
+}
+
+.rating-stars,
+.review-card-stars {
+    white-space: nowrap;
+    letter-spacing: 2px;
+}
+
+.rating-stars {
+    font-size: 18px;
+}
+
+.star-filled {
+    color: #eab308;
+}
+
+.star-empty {
+    color: #d1d5db;
+}
+
+.donor-rating-summary > p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Donor contact privacy */
+
+.contact-unlocked-message,
+.contact-locked-message {
+    padding: 16px;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+.contact-unlocked-message {
+    display: flex;
+    gap: 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.contact-unlocked-message p {
+    margin: 5px 0 0;
+    font-size: 12px;
+}
+
+.contact-locked-message {
+    text-align: center;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+}
+
+.contact-locked-message .lock-icon {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 28px;
+}
+
+.contact-locked-message h3 {
+    margin: 0 0 8px;
+    color: #9a3412;
+    font-size: 16px;
+}
+
+.contact-locked-message p {
+    margin: 0;
+    color: #7c5a46;
+    font-size: 13px;
+}
+
+.donor-privacy-note {
+    margin-top: 16px;
+    color: #64748b;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Request form */
+
+.request-quantity-info {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0;
+    padding: 14px;
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    border-radius: 11px;
+}
+
+.request-quantity-info span {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.request-quantity-info strong {
+    color: #166534;
+    font-size: 13px;
+}
+
+.food-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.food-request-form label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.food-request-form input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font: inherit;
+    font-size: 14px;
+}
+
+.food-request-form input:focus {
+    outline: none;
+    border-color: #15803d;
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+.request-quantity-help {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.requested-cost-panel {
+    margin-top: 10px;
+    padding: 15px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.requested-cost-panel > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.requested-cost-panel span {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.requested-cost-panel strong {
+    color: #166534;
+    font-size: 13px;
+    text-align: right;
+}
+
+.requested-cost-panel p {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.submit-food-request,
+.submit-review-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 46px;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: #15803d;
+    border: 1px solid #15803d;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.submit-food-request:hover,
+.submit-review-btn:hover {
+    background: #166534;
+    transform: translateY(-1px);
+}
+
+.request-disabled-button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 13px;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: not-allowed;
+}
+
+.existing-request-panel {
+    margin: 18px 0;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.existing-request-panel h3 {
+    margin: 0 0 12px;
+    color: #173b29;
+    font-size: 15px;
+}
+
+.existing-request-panel p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.request-status {
+    display: inline-block;
+    padding: 6px 10px;
+    background: #e0f2fe;
+    color: #075985;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.request-status-approved,
+.request-status-completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.request-status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.food-unavailable-message {
+    margin-top: 18px;
+    padding: 15px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    color: #9a3412;
+}
+
+.food-unavailable-message p,
+.request-help-text {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.request-help-text {
+    margin: 15px 0 0;
+    color: #64748b;
+}
+
+/* ==========================================
+   RATINGS & REVIEWS SECTION
+========================================== */
+
+.food-reviews-section {
+    margin-top: 28px;
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.045);
+}
+
+.reviews-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: 25px;
+}
+
+.reviews-header h2 {
+    margin: 5px 0 8px;
+    color: #173b29;
+    font-size: 25px;
+}
+
+.reviews-header > div:first-child > p:last-child {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.reviews-header-rating {
+    flex-shrink: 0;
+    min-width: 145px;
+    padding: 17px;
+    text-align: center;
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    border-radius: 13px;
+}
+
+.reviews-header-rating strong,
+.reviews-header-rating span {
+    display: block;
+}
+
+.reviews-header-rating strong {
+    color: #166534;
+    font-size: 26px;
+}
+
+.reviews-header-rating span {
+    margin-top: 5px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.review-form-card {
+    margin-bottom: 28px;
+    padding: 22px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+.review-form-card h3 {
+    margin: 0 0 8px;
+    color: #173b29;
+}
+
+.review-form-card > p {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+#foodReviewForm {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.review-rating-fieldset {
+    min-width: 0;
+    margin: 8px 0;
+    padding: 0;
+    border: 0;
+}
+
+.review-rating-fieldset legend,
+#foodReviewForm > label {
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.interactive-stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.interactive-stars input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.interactive-stars label {
+    color: #cbd5e1;
+    font-size: 36px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.interactive-stars label:hover,
+.interactive-stars label:hover ~ label,
+.interactive-stars input:checked ~ label {
+    color: #eab308;
+}
+
+.interactive-stars input:focus-visible + label {
+    outline: 2px solid #15803d;
+    outline-offset: 3px;
+}
+
+#foodReviewForm textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 13px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font: inherit;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+#foodReviewForm textarea:focus {
+    outline: none;
+    border-color: #15803d;
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.1);
+}
+
+#foodReviewForm > small,
+.review-rating-fieldset small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.submit-review-btn {
+    align-self: flex-start;
+    width: auto;
+    min-width: 210px;
+}
+
+.review-status-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding: 16px;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    line-height: 1.7;
+}
+
+.review-status-message p {
+    margin: 5px 0 0;
+}
+
+.review-success-message {
+    color: #166534;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.reviews-list > h3 {
+    margin: 0 0 16px;
+    color: #173b29;
+    font-size: 19px;
+}
+
+.review-card {
+    margin-bottom: 14px;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.review-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reviewer-avatar {
+    display: flex;
+    flex: 0 0 42px;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: #f0fdf4;
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+.reviewer-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.reviewer-info strong {
+    color: #1e293b;
+    overflow-wrap: anywhere;
+}
+
+.reviewer-info small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.review-card-stars {
+    font-size: 16px;
+}
+
+.review-card-text {
+    margin: 14px 0 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.review-no-text {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.no-reviews-message {
+    padding: 30px 18px;
+    text-align: center;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+}
+
+.no-reviews-message > span {
+    font-size: 32px;
+}
+
+.no-reviews-message h3 {
+    margin: 10px 0 6px;
+}
+
+.no-reviews-message p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* Bottom navigation */
+
+.details-bottom-navigation {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 18px 0;
+}
+
+.details-bottom-navigation a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 17px;
+    background: #ffffff;
+    border: 1px solid #d1fae5;
+    border-radius: 10px;
+    color: #166534;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.details-bottom-navigation a:hover {
+    background: #f0fdf4;
+}
+
+/* ==========================================
+   TABLET AND MOBILE
+========================================== */
+
+@media (max-width: 950px) {
+    .food-details-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "food"
+            "donor"
+            "request";
+        gap: 20px;
+    }
+
+    .details-food-image {
+        height: 320px;
+    }
+}
+
+@media (max-width: 600px) {
+    .food-details-page {
+        padding: 16px 12px 30px;
+    }
+
+    .details-page-header {
+        padding: 21px 18px;
+        border-radius: 15px;
+    }
+
+    .details-back-link {
+        margin-bottom: 20px;
+    }
+
+    .details-page-header h1 {
+        font-size: 27px;
+    }
+
+    .details-card {
+        padding: 17px;
+        border-radius: 15px;
+    }
+
+    .details-card-heading {
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .details-card-icon {
+        flex-basis: 40px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .details-card-heading h2 {
+        font-size: 17px;
+    }
+
+    .details-food-image {
+        height: 235px;
+    }
+
+    .details-food-title-row h3 {
+        font-size: 23px;
+    }
+
+    .details-unit-price,
+    .request-price-value {
+        font-size: 27px;
+    }
+
+    .food-reviews-section {
+        padding: 18px;
+        border-radius: 15px;
+    }
+
+    .reviews-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reviews-header h2 {
+        font-size: 22px;
+    }
+
+    .reviews-header-rating {
+        width: 100%;
+    }
+
+    .review-form-card {
+        padding: 15px;
+    }
+
+    .interactive-stars label {
+        font-size: 33px;
+    }
+
+    .review-card-header {
+        flex-wrap: wrap;
+    }
+
+    .review-card-stars {
+        width: 100%;
+        padding-left: 54px;
+    }
+
+    .submit-review-btn {
+        width: 100%;
+        min-width: 0;
+        align-self: stretch;
+    }
+
+    .details-bottom-navigation {
+        flex-direction: column;
+    }
+
+    .details-bottom-navigation a {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .details-card,
+    .submit-food-request,
+    .submit-review-btn,
+    .interactive-stars label {
+        transition: none;
+    }
+}

@@ -1,0 +1,479 @@
+
+{% extends "base.html" %}
+
+{% block title %}Donate Food | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_food.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="register-container food-form-container">
+
+    <header class="food-form-header">
+        <h1>Donate Surplus Food 🍃</h1>
+        <p>
+            Share extra food with your community.
+            Choose a free donation or set an affordable price.
+        </p>
+    </header>
+
+    <form
+        action="{{ url_for('add_food') }}"
+        method="POST"
+        id="addFoodForm"
+        enctype="multipart/form-data"
+    >
+
+        <!-- FOOD IMAGE UPLOAD -->
+        <div class="form-group food-image-section">
+
+            <label class="food-image-label" for="foodImageInput">
+                Food Photo
+            </label>
+
+            <div class="food-image-upload-box">
+
+                <div id="foodImagePlaceholder" class="food-image-placeholder">
+                    <span class="food-image-icon">📸</span>
+                    <h3>Add a Food Photo</h3>
+                    <p>Help recipients see what you are sharing.</p>
+                    <small>JPG, PNG or WEBP · Maximum 5 MB</small>
+                </div>
+
+                <img
+                    id="foodImagePreview"
+                    class="food-image-preview"
+                    alt="Preview of selected food"
+                    hidden
+                >
+
+                <div class="food-image-actions">
+                    <button
+                        type="button"
+                        id="chooseFoodImage"
+                        class="food-image-btn"
+                    >
+                        🖼️ Choose from Gallery
+                    </button>
+
+                    <button
+                        type="button"
+                        id="takeFoodPhoto"
+                        class="food-camera-btn"
+                    >
+                        📷 Take a Photo
+                    </button>
+                </div>
+
+                <input
+                    type="file"
+                    id="foodImageInput"
+                    name="food_image"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden
+                >
+
+                <input
+                    type="file"
+                    id="foodCameraInput"
+                    accept="image/jpeg,image/png,image/webp"
+                    capture="environment"
+                    hidden
+                >
+
+                <button
+                    type="button"
+                    id="removeFoodImage"
+                    class="food-image-remove"
+                    hidden
+                >
+                    🗑️ Remove Photo
+                </button>
+
+                <p
+                    id="foodImageMessage"
+                    class="food-image-message"
+                    aria-live="polite"
+                >
+                    Select a photo or take a new one.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- FOOD NAME -->
+        <div class="form-group">
+            <label for="food_name">Food Name</label>
+
+            <input
+                type="text"
+                id="food_name"
+                name="food_name"
+                placeholder="e.g. Vegetable Rice"
+                maxlength="150"
+                required
+            >
+        </div>
+
+        <!-- FOOD CATEGORY -->
+        <div class="form-group">
+            <label for="category">Food Category</label>
+
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="Meals">Meals</option>
+                <option value="Fruits & Vegetables">Fruits &amp; Vegetables</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Dairy & Beverages">Dairy &amp; Beverages</option>
+                <option value="Packaged Food">Packaged Food</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <small class="category-help">
+                Choose the category that best describes your food.
+            </small>
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div class="form-group">
+            <label for="description">Description</label>
+
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Describe the food, preparation and storage conditions"
+                rows="3"
+                maxlength="2000"
+            ></textarea>
+        </div>
+
+        <!-- AVAILABLE QUANTITY -->
+        <div class="form-group">
+            <label for="quantity">Available Quantity</label>
+
+            <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                min="0.01"
+                max="1000000"
+                step="0.01"
+                placeholder="Enter available quantity"
+                required
+            >
+        </div>
+
+        <!-- QUANTITY UNIT -->
+        <div class="form-group">
+            <label for="quantity_unit">Quantity Unit</label>
+
+            <select id="quantity_unit" name="quantity_unit" required>
+                <option value="plates">Plates</option>
+                <option value="kg">Kilograms (kg)</option>
+                <option value="packets">Packets</option>
+                <option value="litres">Litres</option>
+            </select>
+        </div>
+
+        <!-- DONATION TYPE AND PRICE -->
+        <div class="form-group pricing-section">
+
+            <label for="donation_type">Donation Type</label>
+
+            <select id="donation_type" name="donation_type" required>
+                <option value="free" selected>Free Donation — ₹0</option>
+                <option value="paid">Paid Food — Set a Price</option>
+            </select>
+
+            <p class="pricing-help">
+                Free food costs nothing. For paid food, enter
+                the price of one plate, packet, kg or litre.
+            </p>
+
+            <div id="priceFields" hidden>
+
+                <label for="price_per_unit" id="priceLabel">
+                    Price per Plate (₹)
+                </label>
+
+                <div class="price-input-wrapper">
+                    <span aria-hidden="true">₹</span>
+
+                    <input
+                        type="number"
+                        id="price_per_unit"
+                        name="price_per_unit"
+                        min="0.01"
+                        max="1000000"
+                        step="0.01"
+                        placeholder="e.g. 20.00"
+                        disabled
+                    >
+                </div>
+
+                <small id="priceUnitHelp">
+                    Enter the price for one plate.
+                </small>
+
+                <!-- PRICE ESTIMATE -->
+                <div
+                    id="priceEstimate"
+                    class="price-estimate"
+                    aria-live="polite"
+                    hidden
+                >
+
+                    <div class="price-estimate-row">
+                        <span>Available Quantity</span>
+                        <strong id="estimateQuantity">0 plates</strong>
+                    </div>
+
+                    <div class="price-estimate-row">
+                        <span>Price per Unit</span>
+                        <strong id="estimateUnitPrice">₹0.00</strong>
+                    </div>
+
+                    <div class="price-estimate-total">
+                        <span>Total Estimated Price</span>
+                        <strong id="estimatedTotal">₹0.00</strong>
+                    </div>
+
+                    <p class="price-estimate-note">
+                        Total estimated price = Available quantity
+                        × Price per unit. The recipient pays according
+                        to the actual quantity agreed with the donor.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- PICKUP LOCATION -->
+        <div class="form-group location-section">
+
+            <label for="pickup_location">Pickup Location</label>
+
+            <input
+                type="text"
+                id="pickup_location"
+                name="pickup_location"
+                placeholder="Select a map location or enter address"
+                autocomplete="street-address"
+                maxlength="255"
+                required
+            >
+
+            <button
+                type="button"
+                id="getLocationBtn"
+                class="location-btn"
+            >
+                📍 Use My Current Location
+            </button>
+
+            <p
+                id="locationMessage"
+                class="location-message"
+                aria-live="polite"
+            >
+                Select a point on the map or use GPS.
+                You can edit the address afterwards.
+            </p>
+
+            <p class="map-instructions">
+                Tap the map or drag the marker to select your pickup point.
+            </p>
+
+            <div
+                id="map"
+                role="application"
+                aria-label="Select food pickup location"
+            ></div>
+
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <div class="coordinates-display">
+                <p>
+                    <strong>Latitude:</strong>
+                    <span id="latitudeDisplay">Not selected</span>
+                </p>
+
+                <p>
+                    <strong>Longitude:</strong>
+                    <span id="longitudeDisplay">Not selected</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- EXPIRY DATE AND TIME -->
+        <div class="form-group">
+            <label for="expiry_time">Expiry Date and Time</label>
+
+            <input
+                type="datetime-local"
+                id="expiry_time"
+                name="expiry_time"
+                required
+            >
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn food-publish-btn">
+            Publish Food Listing
+        </button>
+
+    </form>
+</section>
+
+<!-- LEAFLET MAP LIBRARY -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- MAP AND IMAGE SCRIPTS -->
+<script src="{{ url_for('static', filename='js/location.js') }}"></script>
+<script src="{{ url_for('static', filename='js/food-image.js') }}"></script>
+
+<!-- LIVE PRICE CALCULATION -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("addFoodForm");
+    const donationType = document.getElementById("donation_type");
+    const priceFields = document.getElementById("priceFields");
+    const priceInput = document.getElementById("price_per_unit");
+    const quantityInput = document.getElementById("quantity");
+    const quantityUnit = document.getElementById("quantity_unit");
+
+    const priceLabel = document.getElementById("priceLabel");
+    const priceUnitHelp = document.getElementById("priceUnitHelp");
+    const priceEstimate = document.getElementById("priceEstimate");
+
+    const estimateQuantity = document.getElementById("estimateQuantity");
+    const estimateUnitPrice = document.getElementById("estimateUnitPrice");
+    const estimatedTotal = document.getElementById("estimatedTotal");
+
+    const units = {
+        plates: {
+            singular: "plate",
+            plural: "plates"
+        },
+        packets: {
+            singular: "packet",
+            plural: "packets"
+        },
+        kg: {
+            singular: "kg",
+            plural: "kg"
+        },
+        litres: {
+            singular: "litre",
+            plural: "litres"
+        }
+    };
+
+    function formatINR(amount) {
+        return amount.toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function updatePriceCalculation() {
+        const isPaid = donationType.value === "paid";
+        const unit = units[quantityUnit.value] || units.plates;
+
+        priceFields.hidden = !isPaid;
+        priceInput.disabled = !isPaid;
+        priceInput.required = isPaid;
+
+        priceLabel.textContent =
+            "Price per " + unit.singular + " (₹)";
+
+        priceUnitHelp.textContent =
+            "Enter the price for one " + unit.singular + ".";
+
+        if (!isPaid) {
+            priceInput.value = "";
+            priceEstimate.hidden = true;
+            return;
+        }
+
+        const quantityText = quantityInput.value.trim();
+        const priceText = priceInput.value.trim();
+
+        const quantity = Number(quantityText);
+        const unitPrice = Number(priceText);
+
+        const validQuantity =
+            quantityText !== "" &&
+            Number.isFinite(quantity) &&
+            quantity > 0;
+
+        const validPrice =
+            priceText !== "" &&
+            Number.isFinite(unitPrice) &&
+            unitPrice > 0;
+
+        if (!validQuantity || !validPrice) {
+            priceEstimate.hidden = true;
+            return;
+        }
+
+        const totalPrice = quantity * unitPrice;
+
+        estimateQuantity.textContent =
+            quantity.toLocaleString("en-IN") + " " +
+            (quantity === 1 ? unit.singular : unit.plural);
+
+        estimateUnitPrice.textContent = formatINR(unitPrice);
+        estimatedTotal.textContent = formatINR(totalPrice);
+
+        priceEstimate.hidden = false;
+    }
+
+    donationType.addEventListener("change", updatePriceCalculation);
+    quantityInput.addEventListener("input", updatePriceCalculation);
+    quantityUnit.addEventListener("change", updatePriceCalculation);
+    priceInput.addEventListener("input", updatePriceCalculation);
+
+    // Validate paid food price before submission.
+    form.addEventListener("submit", function (event) {
+
+        if (donationType.value === "paid") {
+            const priceText = priceInput.value.trim();
+            const price = Number(priceText);
+
+            if (
+                priceText === "" ||
+                !Number.isFinite(price) ||
+                price <= 0 ||
+                price > 1000000
+            ) {
+                event.preventDefault();
+
+                priceInput.setCustomValidity(
+                    "Enter a price greater than ₹0 and no more than ₹10,00,000 per unit."
+                );
+
+                priceInput.reportValidity();
+                return;
+            }
+        }
+
+        priceInput.setCustomValidity("");
+    });
+
+    priceInput.addEventListener("input", function () {
+        priceInput.setCustomValidity("");
+    });
+
+    updatePriceCalculation();
+});
+</script>
+
+{% endblock %}

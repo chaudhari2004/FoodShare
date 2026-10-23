@@ -1,0 +1,240 @@
+
+.donor-requests-page {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 20px 40px;
+}
+
+.requests-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.requests-header h1 {
+    margin: 0 0 8px;
+    color: #183b2b;
+    font-size: 30px;
+}
+
+.requests-header p {
+    margin: 0;
+    color: #64748b;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 11px 18px;
+    background: #e8f5ec;
+    color: #176b3a;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.requests-list {
+    display: grid;
+    gap: 20px;
+}
+
+.request-card {
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+.request-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.request-card-header h2 {
+    margin: 0 0 7px;
+    color: #183b2b;
+    font-size: 21px;
+}
+
+.recipient-name {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.request-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background: #fff4d6;
+    color: #946200;
+}
+
+.status-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-completed {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.request-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    padding: 22px 0;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.detail-item span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.detail-item strong {
+    color: #25352d;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.request-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.request-actions form {
+    margin: 0;
+}
+
+.approve-btn,
+.reject-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 17px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.approve-btn {
+    background: #198754;
+    color: white;
+}
+
+.approve-btn:hover {
+    background: #146c43;
+}
+
+.reject-btn {
+    background: #fff;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.reject-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.empty-requests {
+    text-align: center;
+    padding: 65px 20px;
+    background: #f8faf9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+}
+
+.empty-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.empty-requests h2 {
+    color: #183b2b;
+    margin-bottom: 10px;
+}
+
+.empty-requests p {
+    color: #64748b;
+    margin-bottom: 22px;
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    .requests-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .request-details {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .request-card {
+        padding: 18px;
+    }
+
+    .request-card-header {
+        flex-direction: column;
+    }
+}
+
+/* Complete Exchange Button */
+.complete-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #16803d;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.complete-btn:hover {
+    background: #116530;
+    transform: translateY(-1px);
+}
+
+.completion-note {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.completion-message {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #ecfdf3;
+    color: #166534;
+    font-weight: 600;
+}

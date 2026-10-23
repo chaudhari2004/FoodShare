@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Verify OTP | FoodShare{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reset-page {
+        max-width: 460px;
+        margin: 55px auto;
+        padding: 32px;
+        background: #fff;
+        border: 1px solid #e0ebe3;
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(20, 55, 35, .08);
+    }
+
+    .reset-page h1 {
+        color: #174c35;
+        font-size: 28px;
+    }
+
+    .reset-page p {
+        color: #66756b;
+        line-height: 1.6;
+    }
+
+    .reset-page label {
+        display: block;
+        margin: 22px 0 8px;
+        font-weight: 600;
+    }
+
+    .reset-page input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px;
+        border: 1px solid #d4e2d7;
+        border-radius: 10px;
+        font-size: 22px;
+        letter-spacing: 7px;
+        text-align: center;
+    }
+
+    .reset-button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 14px;
+        border: 0;
+        border-radius: 10px;
+        background: #218447;
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .reset-back {
+        display: block;
+        margin-top: 20px;
+        color: #218447;
+        text-align: center;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="reset-page">
+    <h1>Verify Your Email</h1>
+
+    <p>
+        Enter the 6-digit code sent to
+        <strong>{{ email }}</strong>.
+        The code expires in 5 minutes.
+    </p>
+
+    <form method="POST" action="{{ url_for('verify_reset_otp') }}">
+        <label for="otp">Verification code</label>
+
+        <input
+            type="text"
+            id="otp"
+            name="otp"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            minlength="6"
+            maxlength="6"
+            autocomplete="one-time-code"
+            placeholder="000000"
+            required
+        >
+
+        <button class="reset-button" type="submit">
+            Verify OTP
+        </button>
+    </form>
+
+    <a class="reset-back" href="{{ url_for('forgot_password') }}">
+        Start again
+    </a>
+</section>
+{% endblock %}

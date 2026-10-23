@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#f5faf6">
+    <meta name="description"
+          content="FoodShare helps communities share surplus food and reduce food waste.">
+
+    <title>{% block title %}FoodShare{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% if session.get('user_id') %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/notifications.css') }}">
+    {% endif %}
+
+    {% block extra_css %}{% endblock %}
+
+    <!-- Notification styles -->
+    {% if session.get('user_id') %}
+    <style>
+        .notification-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .notification-toggle {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 9px 14px;
+            border: 1px solid #d7e8dc;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fcf9 100%);
+            color: #174c35;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(20, 55, 35, 0.04);
+            transition: background .2s ease, border-color .2s ease,
+                        box-shadow .2s ease, transform .2s ease;
+        }
+
+        .notification-toggle:hover {
+            background: #eff9f2;
+            border-color: #b7d9c1;
+            box-shadow: 0 4px 12px rgba(20, 75, 45, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .notification-toggle:focus-visible,
+        .notification-mark-all:focus-visible,
+        .notification-footer:focus-visible {
+            outline: 3px solid rgba(46, 139, 87, 0.25);
+            outline-offset: 3px;
+        }
+
+        .notification-bell {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .notification-count {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border: 2px solid #fff;
+            border-radius: 20px;
+            background: #e34b4b;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .notification-count.visible {
+            display: inline-flex;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            z-index: 1000;
+            top: calc(100% + 11px);
+            right: 0;
+            width: min(370px, calc(100vw - 28px));
+            overflow: hidden;
+            border: 1px solid #e0ebe3;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 18px 48px rgba(20, 55, 35, 0.18);
+            transform-origin: top right;
+            animation: notification-dropdown-in .18s ease-out;
+        }
+
+        @keyframes notification-dropdown-in {
+            from {
+                opacity: 0;
+                transform: translateY(-6px) scale(.985);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .notification-dropdown[hidden] {
+            display: none !important;
+        }
+
+        .notification-dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 17px 18px;
+            border-bottom: 1px solid #edf2ee;
+            background: linear-gradient(135deg, #f7fcf8 0%, #fff 100%);
+        }
+
+        .notification-dropdown-header strong {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #174c35;
+            font-size: 15px;
+            font-weight: 750;
+        }
+
+        .notification-mark-all {
+            padding: 6px 8px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #188052;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease;
+        }
+
+        .notification-mark-all:hover {
+            background: #eaf7ee;
+            color: #105c34;
+        }
+
+        .notification-items {
+            max-height: 360px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #cbdccf transparent;
+        }
+
+        .notification-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-items::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #cbdccf;
+        }
+
+        .notification-item {
+            display: block;
+            position: relative;
+            padding: 15px 18px;
+            border-bottom: 1px solid #f0f3f1;
+            color: #264436;
+            text-decoration: none;
+            transition: background .18s ease;
+        }
+
+        .notification-item:last-child {
+            border-bottom: 0;
+        }
+
+        .notification-item:hover {
+            background: #f6fbf7;
+        }
+
+        .notification-item.unread {
+            background: #f0faf3;
+            border-left: 4px solid #2e8b57;
+            padding-left: 14px;
+        }
+
+        .notification-item.unread:hover {
+            background: #e8f7ec;
+        }
+
+        .notification-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #203b2c;
+            font-size: 13px;
+            font-weight: 750;
+            line-height: 1.4;
+        }
+
+        .notification-item p {
+            margin: 0;
+            color: #65756b;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .notification-item time {
+            display: block;
+            margin-top: 7px;
+            color: #89958d;
+            font-size: 10px;
+        }
+
+        .notification-empty {
+            padding: 30px 18px;
+            color: #75847a;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .notification-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 16px;
+            border-top: 1px solid #e8eee9;
+            background: #fff;
+            color: #187747;
+            font-size: 12px;
+            font-weight: 750;
+            text-align: center;
+            text-decoration: none;
+            transition: background .2s ease, color .2s ease;
+        }
+
+        .notification-footer:hover {
+            background: #eff8f1;
+            color: #105c34;
+        }
+
+        .notification-footer span:last-child {
+            display: inline-block;
+            font-size: 17px;
+            transition: transform .2s ease;
+        }
+
+        .notification-footer:hover span:last-child {
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 700px) {
+            .notification-dropdown {
+                position: fixed;
+                top: 76px;
+                right: 12px;
+                width: min(370px, calc(100vw - 24px));
+                max-height: calc(100vh - 95px);
+            }
+
+            .notification-items {
+                max-height: min(360px, calc(100vh - 190px));
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .notification-dropdown,
+            .notification-toggle,
+            .notification-item,
+            .notification-mark-all,
+            .notification-footer {
+                animation: none;
+                transition: none;
+            }
+
+            .notification-toggle:hover {
+                transform: none;
+            }
+
+            .notification-footer:hover span:last-child {
+                transform: none;
+            }
+        }
+    </style>
+    {% endif %}
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="site-header">
+        <nav class="navbar" aria-label="Main navigation">
+
+            <a class="logo" href="{{ url_for('home') }}">
+                <span class="logo-icon">🍃</span>
+                <span>FoodShare</span>
+            </a>
+
+            <div class="nav-links">
+
+                {% if session.get('user_id') %}
+
+                    {% if session.get('role') == 'admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}"
+                           class="nav-link">Admin Dashboard</a>
+                        <a href="{{ url_for('about') }}"
+                           class="nav-link">About</a>
+                    {% else %}
+                    <a href="{{ url_for('dashboard') }}"
+                       class="nav-link">Dashboard</a>
+                    <a href="{{ url_for('about') }}"
+                       class="nav-link">About</a>
+                    {% endif %}
+
+                    {% if session.get('role') == 'donor' %}
+
+                        <a href="{{ url_for('add_food') }}"
+                           class="nav-link">Donate Food</a>
+
+                        <a href="{{ url_for('my_donations') }}"
+                           class="nav-link">My Donations</a>
+
+                        <a href="{{ url_for('donor_requests') }}"
+                           class="nav-link">Food Requests</a>
+
+                        <a href="{{ url_for('my_chats') }}"
+                           class="nav-link">My Chats</a>
+
+                    {% elif session.get('role') == 'recipient' %}
+
+                        <a href="{{ url_for('browse_food') }}"
+                           class="nav-link">Browse Food</a>
+
+                        <a href="{{ url_for('my_food_requests') }}"
+                           class="nav-link">My Food Requests</a>
+
+                        <a href="{{ url_for('my_chats') }}"
+                           class="nav-link">My Chats</a>
+
+                    {% endif %}
+
+                    <!-- Notification Bell -->
+                    <div class="notification-wrapper"
+                         id="notificationWrapper">
+
+                        <button type="button"
+                                class="notification-toggle"
+                                id="notificationToggle"
+                                aria-label="Notifications"
+                                aria-expanded="false"
+                                aria-controls="notificationDropdown">
+
+                            <span class="notification-bell">🔔</span>
+                            <span>Notifications</span>
+
+                            <span class="notification-count"
+                                  id="notificationCount"
+                                  aria-live="polite">0</span>
+                        </button>
+
+                        <section class="notification-dropdown"
+                                 id="notificationDropdown"
+                                 aria-label="Recent notifications"
+                                 hidden>
+
+                            <div class="notification-dropdown-header">
+                                <strong>Notifications</strong>
+
+                                <button type="button"
+                                        class="notification-mark-all"
+                                        id="notificationMarkAll">
+                                    Mark all read
+                                </button>
+                            </div>
+
+                            <div class="notification-items"
+                                 id="notificationItems"
+                                 aria-live="polite">
+                                <div class="notification-empty">
+                                    Loading notifications...
+                                </div>
+                            </div>
+
+                            <a class="notification-footer"
+                               href="{{ url_for('notifications_page') }}">
+                                <span>View all notifications</span>
+                                <span aria-hidden="true">→</span>
+                            </a>
+                        </section>
+                    </div>
+
+                    <span class="nav-user">
+                        Hi, {{ session.get('full_name', 'User') }}
+                    </span>
+
+                    <form action="{{ url_for('logout') }}"
+                          method="POST"
+                          class="nav-logout-form">
+                        <button type="submit" class="nav-logout">
+                            Logout
+                        </button>
+                    </form>
+
+                {% else %}
+
+                    <a href="{{ url_for('home') }}"
+                       class="nav-link">Home</a>
+                    <a href="{{ url_for('about') }}"
+                       class="nav-link">About</a>
+                    <a href="{{ url_for('login', role='admin') }}"
+                       class="nav-link">Admin</a>
+                    <a href="{{ url_for('login', role='user') }}"
+                       class="nav-link">User Login</a>
+                    <a href="{{ url_for('register') }}"
+                       class="nav-register">Get Started</a>
+
+                {% endif %}
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container" aria-live="polite">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>
+            🍃 <strong>FoodShare</strong>
+            — Share Food, Spread Happiness.
+        </p>
+        <span>
+            Together, let's reduce food waste and help our community.
+        </span>
+    </footer>
+
+    {% if session.get('user_id') %}
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"
+            defer></script>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

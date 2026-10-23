@@ -1,0 +1,78 @@
+
+{% extends "base.html" %}
+
+{% block title %}Notifications | FoodShare{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+
+    <div class="notifications-header">
+        <div>
+            <h2>🔔 Notifications</h2>
+            <p>Stay updated on your FoodShare activities.</p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="back-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if notifications %}
+        <div class="notifications-list">
+
+            {% for notification in notifications %}
+                <div class="notification-card
+                    {% if not notification[5] %}unread{% endif %}">
+
+                    <div class="notification-content">
+                        <h3>{{ notification[1] }}</h3>
+
+                        <p>{{ notification[2] }}</p>
+
+                        <span class="notification-date">
+                            {{ notification[6].strftime('%d %b %Y, %I:%M %p')
+                               if notification[6] else '' }}
+                        </span>
+                    </div>
+
+                    <div class="notification-status">
+                        {% if not notification[5] %}
+                            <span class="status-badge new">New</span>
+                        {% else %}
+                            <span class="status-badge read">Read</span>
+                        {% endif %}
+                    </div>
+
+                    {% if notification[4] %}
+                        <a href="{{ notification[4] }}"
+                           class="details-btn">
+                            View Details →
+                        </a>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <div class="empty-notifications">
+            <div class="empty-icon">🔔</div>
+            <h3>No notifications yet</h3>
+            <p>
+                Your food requests and donation updates
+                will appear here.
+            </p>
+
+            <a href="{{ url_for('dashboard') }}" class="back-btn">
+                Go to Dashboard
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/notifications.css') }}">
+{% endblock %}

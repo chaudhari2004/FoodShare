@@ -1,0 +1,176 @@
+
+{% extends "base.html" %}
+
+{% block title %}Donor Requests | FoodShare{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/donor_requests.css') }}">
+
+<section class="donor-requests-page">
+
+    <!-- Page Header -->
+    <div class="requests-header">
+        <div>
+            <h1>Food Requests</h1>
+            <p>Manage requests received for your food donations.</p>
+        </div>
+
+        <a href="{{ url_for('my_donations') }}" class="back-btn">
+            My Donations
+        </a>
+    </div>
+
+    <!-- Requests List -->
+    {% if requests_list %}
+
+        <div class="requests-list">
+
+            {% for request in requests_list %}
+
+            <article class="request-card">
+
+                <!-- Food and Recipient -->
+                <div class="request-card-header">
+                    <div>
+                        <h2>{{ request[5] }}</h2>
+
+                        <p class="recipient-name">
+                            Requested by {{ request[7] }}
+                        </p>
+                    </div>
+
+                    <span class="request-status status-{{ request[3]|lower }}">
+                        {{ request[3]|capitalize }}
+                    </span>
+                </div>
+
+                <!-- Request Details -->
+                <div class="request-details">
+
+                    <div class="detail-item">
+                        <span>Requested Quantity</span>
+                        <strong>
+                            {{ request[2] }} {{ request[6] }}
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Recipient Email</span>
+                        <strong>{{ request[8] }}</strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>Requested At</span>
+                        <strong>{{ request[4] }}</strong>
+                    </div>
+
+                </div>
+
+                <!-- Pending Request Actions -->
+                {% if request[3]|lower == 'pending' %}
+
+                <div class="request-actions">
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'update_food_request',
+                            food_id=request[0],
+                            recipient_id=request[1],
+                            action='approve'
+                        ) }}"
+                    >
+                        <button type="submit" class="approve-btn">
+                            Approve Request
+                        </button>
+                    </form>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'update_food_request',
+                            food_id=request[0],
+                            recipient_id=request[1],
+                            action='reject'
+                        ) }}"
+                    >
+                        <button type="submit" class="reject-btn">
+                            Reject Request
+                        </button>
+                    </form>
+
+                </div>
+
+                {% endif %}
+
+                <!-- Complete Exchange Action -->
+                {% if request[3]|lower == 'approved' %}
+
+                <div class="request-actions">
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'update_food_request',
+                            food_id=request[0],
+                            recipient_id=request[1],
+                            action='complete'
+                        ) }}"
+                        onsubmit="return confirm(
+                            'Have you handed over this food to the recipient?'
+                        );"
+                    >
+                        <button type="submit" class="complete-btn">
+                            Complete Exchange
+                        </button>
+                    </form>
+
+                    <p class="completion-note">
+                        Mark this complete only after the food has
+                        actually been handed over.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+                <!-- Completed Message -->
+                {% if request[3]|lower == 'completed' %}
+
+                <div class="completion-message">
+                    ✓ Food exchange completed
+                </div>
+
+                {% endif %}
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <!-- Empty State -->
+        <div class="empty-requests">
+            <div class="empty-icon">📬</div>
+
+            <h2>No Requests Yet</h2>
+
+            <p>
+                When someone requests your donated food,
+                their request will appear here.
+            </p>
+
+            <a href="{{ url_for('my_donations') }}" class="back-btn">
+                View My Donations
+            </a>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

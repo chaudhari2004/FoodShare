@@ -1,0 +1,46 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login | FoodShare{% endblock %}
+
+{% block content %}
+<section class="register-container">
+    <h1>{% if login_mode == 'admin' %}Admin Login{% else %}Welcome Back!{% endif %}</h1>
+    <p>{% if login_mode == 'admin' %}Sign in with your authorised administrator account.{% else %}Login to your FoodShare account as a donor or receiver.{% endif %}</p>
+
+    <form action="{{ url_for('login') }}" method="POST">
+        <label for="email">Email Address</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+        >
+
+        <label for="password">Password</label>
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+        >
+
+        <button type="submit" class="btn">Login</button>
+    </form>
+
+    {% if login_mode != 'admin' %}
+    <p>New to FoodShare?
+        <a href="{{ url_for('register') }}">Create an account</a>
+    </p>
+    {% else %}
+    <p><a href="{{ url_for('login', role='user') }}">Login as a user instead</a></p>
+    {% endif %}
+    <div class="forgot-password-link">
+    <a href="{{ url_for('forgot_password') }}">
+        Forgot Password?
+    </a>
+</div>
+</section>
+{% endblock %}

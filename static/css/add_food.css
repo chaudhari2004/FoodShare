@@ -1,0 +1,112 @@
+/* Pricing section */
+    .pricing-section {
+        margin: 24px 0;
+    }
+
+    .pricing-help {
+        color: #718078;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 8px 0 16px;
+    }
+
+    .price-input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+        padding: 0 14px;
+        border: 1px solid #d9e4db;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .price-input-wrapper > span {
+        color: #218044;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .price-input-wrapper input {
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+    }
+
+    .price-input-wrapper:focus-within {
+        border-color: #278348;
+        box-shadow: 0 0 0 3px #e2f3e6;
+    }
+
+    .price-estimate {
+        margin-top: 18px;
+        padding: 18px;
+        border: 1px solid #cfe8d4;
+        border-radius: 14px;
+        background: #f0faf2;
+    }
+
+    .price-estimate-row,
+    .price-estimate-total {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 9px 0;
+    }
+
+    .price-estimate-row span {
+        color: #647568;
+        font-size: 13px;
+    }
+
+    .price-estimate-row strong {
+        color: #294734;
+        font-size: 13px;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .price-estimate-total {
+        margin-top: 8px;
+        padding-top: 15px;
+        border-top: 1px solid #cfe8d4;
+    }
+
+    .price-estimate-total span {
+        color: #1c5830;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .price-estimate-total strong {
+        color: #18813c;
+        font-size: 22px;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .price-estimate-note {
+        margin: 10px 0 0;
+        color: #718078;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+/* Food category */
+.category-help {
+    display: block;
+    margin-top: 7px;
+    color: #718078;
+    font-size: 13px;
+    line-height: 1.5;
+}
+

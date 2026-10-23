@@ -1,0 +1,671 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #24332a;
+    background: #f8faf6;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 20px 8%;
+    background: white;
+}
+
+.navbar a {
+    color: #24332a;
+    text-decoration: none;
+}
+
+.navbar .logo {
+    margin-right: auto;
+    font-size: 24px;
+    font-weight: bold;
+    color: #24834a;
+}
+
+.hero {
+    text-align: center;
+    padding: 100px 20px;
+    background: #e8f5e9;
+}
+
+.tagline {
+    color: #24834a;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    margin: 20px 0;
+}
+
+.description {
+    max-width: 560px;
+    margin: 0 auto 30px;
+    line-height: 1.8;
+}
+
+.btn {
+    display: inline-block;
+    padding: 14px 24px;
+    background: #24834a;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.about {
+    padding: 55px 20px;
+    text-align: center;
+}
+
+footer {
+    padding: 20px;
+    text-align: center;
+    background: white;
+}
+
+.register-container {
+    max-width: 480px;
+    margin: 50px auto;
+    padding: 32px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.register-container h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.register-container > p {
+    text-align: center;
+    color: #647067;
+    margin-bottom: 28px;
+}
+
+.register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.register-container label {
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.register-container input,
+.register-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d4ddd5;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+.register-container input:focus,
+.register-container select:focus {
+    outline: 2px solid #24834a;
+    border-color: #24834a;
+}
+
+.register-container button {
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 16px;
+}
+
+
+/* FoodShare pickup location */
+
+.location-section {
+    margin-top: 18px;
+    margin-bottom: 20px;
+}
+
+.location-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.location-section input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.location-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #198754;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #176b45;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.location-btn:hover {
+    background: #ecfdf3;
+}
+
+.location-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.location-message,
+.map-instructions {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#map {
+    width: 100%;
+    height: 320px;
+    margin-top: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.coordinates-display {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.coordinates-display p {
+    margin: 5px 0;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    #map {
+        height: 260px;
+    }
+}
+
+/* Food image upload */
+.food-image-section {
+    margin: 20px 0;
+    width: 100%;
+}
+
+.food-image-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.food-image-upload-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    border: 2px dashed #b8d9c2;
+    border-radius: 16px;
+    background: #f7fcf8;
+    text-align: center;
+}
+
+.food-image-placeholder {
+    padding: 12px 0;
+}
+
+.food-image-icon {
+    display: block;
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.food-image-placeholder h3 {
+    margin: 8px 0;
+    color: #245c39;
+}
+
+.food-image-placeholder p,
+.food-image-placeholder small {
+    color: #647568;
+    overflow-wrap: anywhere;
+}
+
+.food-image-preview {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    max-height: 300px;
+    object-fit: contain;
+    margin: 0 auto 16px;
+    border-radius: 12px;
+    background: #eaf2ec;
+}
+
+.food-image-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.food-image-btn,
+.food-camera-btn,
+.food-image-remove {
+    min-height: 44px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 9px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.food-image-btn {
+    background: #237a45;
+    color: white;
+}
+
+.food-camera-btn {
+    background: #e1f1e5;
+    color: #205b35;
+    border: 1px solid #b8d9c2;
+}
+
+.food-image-remove {
+    margin-top: 12px;
+    background: #fff0f0;
+    color: #a52727;
+}
+
+.food-image-message {
+    margin: 14px 0 0;
+    color: #647568;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.food-image-message.is-error {
+    color: #b42318;
+}
+
+.food-image-btn:focus-visible,
+.food-camera-btn:focus-visible,
+.food-image-remove:focus-visible {
+    outline: 3px solid #f0bd4b;
+    outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    .food-image-upload-box {
+        padding: 14px;
+    }
+
+    .food-image-actions {
+        flex-direction: column;
+    }
+
+    .food-image-btn,
+    .food-camera-btn {
+        width: 100%;
+    }
+
+    .food-image-preview {
+        max-height: 240px;
+    }
+}
+/* My Donations page */
+.donations-header {
+    margin-bottom: 28px;
+}
+
+.donations-header h1 {
+    color: #245c39;
+    margin-bottom: 8px;
+}
+
+.donations-header .btn {
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+}
+
+.donations-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.donation-card {
+    min-width: 0;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e0e9e2;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(30, 70, 40, 0.06);
+    overflow-wrap: anywhere;
+}
+
+.donation-card h2 {
+    margin: 14px 0 10px;
+    color: #245c39;
+}
+
+.donation-card p {
+    line-height: 1.6;
+}
+
+.donation-status {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 20px;
+    background: #e7f5e9;
+    color: #237a45;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-reserved {
+    background: #fff2d6;
+    color: #805b00;
+}
+
+.status-collected {
+    background: #e5edff;
+    color: #254d9b;
+}
+
+.status-expired {
+    background: #ffe8e8;
+    color: #a52727;
+}
+
+.muted-text,
+.donation-created {
+    color: #68776c;
+}
+
+.empty-donations {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f7fcf8;
+    border-radius: 14px;
+}
+
+.empty-donations-icon {
+    font-size: 42px;
+}
+
+.empty-donations .btn {
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+}
+
+@media (max-width: 640px) {
+    .donations-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .donation-card {
+        padding: 17px;
+    }
+}
+
+
+/* ==========================================
+   FOODSHARE - GLOBAL NAVBAR AND FOOTER
+========================================== */
+
+.site-header {
+    position: relative;
+    z-index: 100;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #e5eee7;
+}
+
+.navbar {
+    width: min(1240px, 94%);
+    min-height: 76px;
+    margin: 0 auto;
+    padding: 14px 0;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.navbar .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+
+    color: #16804a;
+    font-size: 24px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.logo-icon {
+    font-size: 27px;
+}
+
+.navbar .nav-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.navbar .nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: background 0.2s, color 0.2s;
+}
+
+.navbar .nav-link:hover {
+    background: #edf7f0;
+    color: #16804a;
+}
+
+.navbar .nav-user {
+    padding: 8px 10px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.navbar .nav-logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.navbar .nav-logout {
+    padding: 10px 16px;
+    border: 1px solid #dce8df;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #166534;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.navbar .nav-logout:hover {
+    background: #fff1f0;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.navbar .nav-register {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 18px;
+    border-radius: 9px;
+    background: #16804a;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.navbar .nav-register:hover {
+    background: #11653a;
+}
+
+.role-info {
+    font-size: 13px;
+    color: #64748b;
+    background-color: #f0fdf4;
+    border-left: 3px solid #22c55e;
+    padding: 10px 12px;
+    margin-top: 8px;
+    margin-bottom: 18px;
+    border-radius: 4px;
+    line-height: 1.5;
+}
+
+/* Main content */
+
+.site-main {
+    width: 100%;
+    min-height: 65vh;
+    box-sizing: border-box;
+}
+
+/* Flash messages */
+
+.flash-container {
+    width: min(1200px, 92%);
+    margin: 0 auto;
+}
+
+.flash-message {
+    margin: 14px 0;
+    padding: 12px 16px;
+    border-radius: 9px;
+    line-height: 1.5;
+}
+
+.flash-message.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.flash-message.error,
+.flash-message.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.flash-message.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Footer */
+
+.site-footer {
+    margin-top: 45px;
+    padding: 24px 16px;
+    border-top: 1px solid #e5eee7;
+    background: #ffffff;
+    text-align: center;
+}
+
+.site-footer p {
+    margin: 0 0 8px;
+    color: #14532d;
+    font-size: 14px;
+}
+
+.site-footer span {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Tablet and mobile navbar */
+
+@media (max-width: 850px) {
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 0;
+    }
+
+    .navbar .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 520px) {
+    .navbar .logo {
+        font-size: 22px;
+    }
+
+    .navbar .nav-links {
+        gap: 5px;
+    }
+
+    .navbar .nav-link {
+        padding: 9px;
+        font-size: 13px;
+    }
+
+    .navbar .nav-user {
+        width: 100%;
+        padding: 8px 4px;
+    }
+}
+.forgot-password-link {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.forgot-password-link a {
+    color: #218447;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}

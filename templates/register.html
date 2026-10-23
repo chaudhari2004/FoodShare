@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+
+{% block title %}Register | FoodShare{% endblock %}
+
+{% block content %}
+<section class="register-container">
+    <h1>Join FoodShare</h1>
+    <p>Create an account and help reduce food waste.</p>
+
+    <form action="/register" method="POST">
+        <label for="full_name">Full Name</label>
+        <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            placeholder="Enter your full name"
+            required
+        >
+
+        <label for="email">Email Address</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+        >
+
+        <label for="phone">Phone Number</label>
+        <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="Enter your phone number"
+        >
+
+
+<label for="role">I want to</label>
+<select id="role" name="role" required>
+    <option value="recipient">Receive Food</option>
+    <option value="donor">Donate Food</option>
+</select>
+
+<p class="role-info">
+    💡 Don't worry! You can switch between Donor and Recipient
+    anytime later from your dashboard.
+</p>
+
+
+        <label for="password">Password</label>
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Create a password"
+            minlength="8"
+            required
+        >
+
+        <button type="submit" class="btn">Create Account</button>
+    </form>
+</section>
+{% endblock %}

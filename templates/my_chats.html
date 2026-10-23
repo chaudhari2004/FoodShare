@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}My Chats | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="chat-page chat-list-page">
+    <div class="chat-page-heading">
+        <div>
+            <p class="chat-eyebrow">FOODSHARE MESSAGES</p>
+            <h1>My Chats</h1>
+            <p class="chat-subtitle">Coordinate food pickup with your approved food exchange partner.</p>
+        </div>
+        <span class="chat-heading-icon" aria-hidden="true">✉</span>
+    </div>
+
+    {% if conversations %}
+    <div class="conversation-list">
+        {% for conversation in conversations %}
+        <a class="conversation-card" href="{{ url_for('chat_page', conversation_id=conversation[0]) }}">
+            <div class="conversation-avatar" aria-hidden="true">{{ (conversation[3] or 'U')[:1]|upper }}</div>
+            <div class="conversation-main">
+                <div class="conversation-title-row">
+                    <h2>{{ conversation[3] }}</h2>
+                    <span class="conversation-status">{{ conversation[4]|title }}</span>
+                </div>
+                <p class="conversation-food">{{ conversation[2] }}</p>
+                <p class="conversation-preview">
+                    {% if conversation[5] %}{{ conversation[5] }}{% else %}No messages yet. Start the conversation.{% endif %}
+                </p>
+            </div>
+            <span class="conversation-arrow" aria-hidden="true">›</span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="chat-empty-state">
+        <div class="empty-chat-icon" aria-hidden="true">☏</div>
+        <h2>No conversations yet</h2>
+        <p>Chat becomes available after a donor approves your food request.</p>
+        {% if session.get('role') == 'recipient' %}
+        <a class="chat-primary-button" href="{{ url_for('my_food_requests') }}">View my food requests</a>
+        {% else %}
+        <a class="chat-primary-button" href="{{ url_for('donor_requests') }}">View food requests</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

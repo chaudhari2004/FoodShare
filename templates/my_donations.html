@@ -1,0 +1,319 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Donations | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/my_donation.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="my-donations-page">
+
+    <!-- Page Header -->
+    <header class="donations-header">
+        <div class="donations-heading">
+            <span class="donations-eyebrow">FOODSHARE / DONOR</span>
+            <h1>My Donations 🍱</h1>
+            <p>
+                Manage your food listings, track remaining quantity
+                and help reduce food waste in your community.
+            </p>
+        </div>
+
+        <a href="{{ url_for('add_food') }}"
+           class="donations-primary-btn">
+            <span>＋</span> Donate More Food
+        </a>
+    </header>
+
+    {% if donations %}
+
+    <!-- Calculate listing counts, not mixed-unit quantities -->
+    {% set stats = namespace(
+        available=0,
+        fully_allocated=0
+    ) %}
+
+    {% for food in donations %}
+        {% set remaining = food[12]|float
+            if food|length > 12 and food[12] is not none
+            else food[3]|float %}
+
+        {% if food[7] == 'available' and remaining > 0 %}
+            {% set stats.available = stats.available + 1 %}
+        {% endif %}
+
+        {% if remaining <= 0 %}
+            {% set stats.fully_allocated = stats.fully_allocated + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Summary Cards -->
+    <div class="donations-overview">
+
+        <article class="overview-card">
+            <span class="overview-icon">🍱</span>
+            <div>
+                <p>Total Listings</p>
+                <strong>{{ donations|length }}</strong>
+                <small>All your food donations</small>
+            </div>
+        </article>
+
+        <article class="overview-card">
+            <span class="overview-icon">🌱</span>
+            <div>
+                <p>Available Donations</p>
+                <strong>{{ stats.available }}</strong>
+                <small>Listings accepting requests</small>
+            </div>
+        </article>
+
+        <article class="overview-card remaining-overview">
+            <span class="overview-icon">✅</span>
+            <div>
+                <p>Fully Allocated</p>
+                <strong>{{ stats.fully_allocated }}</strong>
+                <small>Listings with zero quantity remaining</small>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- Donation Listings Heading -->
+    <div class="donations-section-heading">
+        <div>
+            <h2>Your Food Listings</h2>
+            <p>{{ donations|length }} donation(s)</p>
+        </div>
+    </div>
+
+    <!-- Search and Status Filter -->
+    <div class="donations-toolbar">
+        <div class="donations-search">
+            <span aria-hidden="true">🔎</span>
+            <input type="search"
+                   id="donationSearch"
+                   placeholder="Search your donations..."
+                   aria-label="Search donations">
+        </div>
+
+        <select id="donationStatusFilter"
+                aria-label="Filter donations by status">
+            <option value="all">All statuses</option>
+            <option value="available">Available</option>
+            <option value="reserved">Reserved</option>
+            <option value="collected">Collected</option>
+            <option value="expired">Expired</option>
+        </select>
+    </div>
+
+    <p id="donationNoResults" class="donation-no-results" hidden>
+        No donations match your search or selected status.
+    </p>
+
+    <!-- Donation Cards -->
+    <div class="donations-grid" id="donationsGrid">
+
+        {% for food in donations %}
+
+        {% set donation_type = food[10]
+            if food|length > 10 and food[10] else 'free' %}
+
+        {% set price_per_unit = food[11]|float
+            if food|length > 11 and food[11] is not none else 0 %}
+
+        {% set remaining = food[12]|float
+            if food|length > 12 and food[12] is not none
+            else food[3]|float %}
+
+        {% set original_quantity = food[3]|float %}
+        {% set total_price = original_quantity * price_per_unit %}
+
+        {% set allocated = [original_quantity - remaining, 0]|max %}
+        {% set allocated_percent = (
+            (allocated / original_quantity * 100)
+            if original_quantity > 0 else 0
+        ) %}
+
+        <article class="donation-card"
+                 data-name="{{ food[1]|lower }}"
+                 data-status="{{ food[7]|lower }}">
+
+            <!-- Food Image -->
+            {% if food[9] %}
+            <img src="{{ url_for('static', filename='uploads/foods/' ~ food[9]) }}"
+                 alt="{{ food[1] }}"
+                 class="donation-food-image"
+                 loading="lazy">
+            {% else %}
+            <div class="donation-image-placeholder">
+                <span>🍲</span>
+                <p>Food photo not available</p>
+            </div>
+            {% endif %}
+
+            <div class="donation-card-content">
+
+                <!-- Status and Donation Type -->
+                <div class="donation-card-top">
+                    <span class="donation-status status-{{ food[7]|lower }}">
+                        {{ food[7]|title }}
+                    </span>
+
+                    {% if donation_type == 'paid' %}
+                    <span class="donation-price-badge paid">₹ PAID</span>
+                    {% else %}
+                    <span class="donation-price-badge free">✓ FREE</span>
+                    {% endif %}
+                </div>
+
+                <h2>{{ food[1] }}</h2>
+
+                <p class="donation-description">
+                    {{ food[2] or "No description provided." }}
+                </p>
+
+                <!-- Price Details -->
+                <section class="donation-price-panel"
+                         aria-label="Donation price">
+
+                    {% if donation_type == 'paid' %}
+                    <div class="donation-price-label">
+                        Price per {{ food[4] }}
+                    </div>
+
+                    <div class="donation-unit-price">
+                        ₹{{ "%.2f"|format(price_per_unit) }}
+                        <span>/ {{ food[4] }}</span>
+                    </div>
+
+                    <div class="donation-total-price">
+                        <span>Original listing value</span>
+                        <strong>₹{{ "%.2f"|format(total_price) }}</strong>
+                    </div>
+
+                    <p class="donation-price-note">
+                        Value of the original donated quantity.
+                    </p>
+                    {% else %}
+                    <div class="donation-price-label">Donation Price</div>
+
+                    <div class="donation-unit-price">FREE</div>
+
+                    <div class="donation-total-price">
+                        <span>Total cost to recipient</span>
+                        <strong>₹0.00</strong>
+                    </div>
+
+                    <p class="donation-price-note">
+                        This food is offered free of charge.
+                    </p>
+                    {% endif %}
+
+                </section>
+
+                <!-- Original and Remaining Quantity -->
+                <div class="donation-quantity-panel">
+
+                    <div class="quantity-heading">
+                        <span>📦</span>
+                        <strong>Quantity Tracking</strong>
+                    </div>
+
+                    <div class="quantity-row">
+                        <span>Original quantity</span>
+                        <strong>
+                            {{ food[3] }} {{ food[4] }}
+                        </strong>
+                    </div>
+
+                    <div class="quantity-row remaining-quantity-row">
+                        <span>Remaining quantity</span>
+                        <strong>
+                            {{ "%.2f"|format(remaining) }} {{ food[4] }}
+                        </strong>
+                    </div>
+
+                    <div class="quantity-progress-track"
+                         role="progressbar"
+                         aria-label="Quantity allocated"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         aria-valuenow="{{ [[allocated_percent|round|int, 0]|max, 100]|min }}">
+                        <div class="quantity-progress-fill"
+                             style="width: {{ [[allocated_percent, 0]|max, 100]|min }}%">
+                        </div>
+                    </div>
+
+                    <small class="quantity-progress-label">
+                        {{ "%.0f"|format(allocated_percent) }}% allocated
+                    </small>
+
+                </div>
+
+                <!-- Pickup Location -->
+                <div class="donation-info-row">
+                    <span class="donation-info-icon">📍</span>
+                    <div>
+                        <strong>Pickup Location</strong>
+                        <p>{{ food[5] or "Location not provided" }}</p>
+                    </div>
+                </div>
+
+                <!-- Expiry -->
+                <div class="donation-info-row">
+                    <span class="donation-info-icon">⏰</span>
+                    <div>
+                        <strong>Expiry Date &amp; Time</strong>
+                        <p>
+                            {{ food[6].strftime('%d %b %Y, %I:%M %p')
+                               if food[6] else 'Not specified' }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Listed Date -->
+                <div class="donation-created">
+                    Listed:
+                    {{ food[8].strftime('%d %b %Y, %I:%M %p')
+                       if food[8] else 'N/A' }}
+                </div>
+
+            </div>
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="empty-donations">
+        <div class="empty-donations-icon">🥗</div>
+        <h2>No donations yet</h2>
+        <p>
+            Your food listings will appear here after you publish them.
+            Start sharing surplus food with your community today.
+        </p>
+        <a href="{{ url_for('add_food') }}"
+           class="donations-primary-btn">
+            ＋ Donate Your First Meal
+        </a>
+    </div>
+
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}" class="donations-back-link">
+        ← Back to Dashboard
+    </a>
+
+</section>
+
+<script src="{{ url_for('static', filename='js/my_donations.js') }}" defer></script>
+
+{% endblock %}

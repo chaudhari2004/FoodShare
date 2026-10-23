@@ -1,0 +1,402 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<main class="dashboard">
+
+    <!-- DASHBOARD HEADER -->
+    <header class="dashboard-header">
+        <div>
+            <p class="dashboard-eyebrow">FOODSHARE / DASHBOARD</p>
+
+            <h1>Welcome, {{ full_name }}! 👋</h1>
+
+            {% if role == "donor" %}
+                <p>Make a difference by sharing surplus food with your community.</p>
+            {% else %}
+                <p>Discover available food and connect with your community.</p>
+            {% endif %}
+        </div>
+
+        <span class="role-badge">
+            {% if role == "donor" %}🍱{% else %}🤝{% endif %}
+            {{ role|title }}
+        </span>
+    </header>
+
+
+    <!-- =====================================
+         DONOR DASHBOARD
+    ====================================== -->
+    {% if role == "donor" %}
+
+        <!-- DONATION STATISTICS -->
+        <section class="dashboard-section">
+
+            <div class="dashboard-section-heading">
+                <div>
+                    <p class="section-eyebrow">YOUR CONTRIBUTION</p>
+                    <h2>Donation Overview</h2>
+                    <p>Track your food listings and their current status.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">📦</span>
+                        <span class="stat-label">All Listings</span>
+                    </div>
+                    <h2>{{ stats[0] }}</h2>
+                    <p>Total donations created</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">🥗</span>
+                        <span class="stat-label">Available</span>
+                    </div>
+                    <h2>{{ stats[1] }}</h2>
+                    <p>Listings available to request</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">🤝</span>
+                        <span class="stat-label">Reserved</span>
+                    </div>
+                    <h2>{{ stats[2] }}</h2>
+                    <p>Listings reserved by recipients</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">✅</span>
+                        <span class="stat-label">Collected</span>
+                    </div>
+                    <h2>{{ stats[3] }}</h2>
+                    <p>Listings marked as collected</p>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">⏰</span>
+                        <span class="stat-label">Expired</span>
+                    </div>
+                    <h2>{{ stats[4] }}</h2>
+                    <p>Listings past their expiry</p>
+                </article>
+
+                <article class="stat-card pending-stat-card">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">📩</span>
+                        <span class="stat-label">Pending Requests</span>
+                    </div>
+                    <h2>{{ pending_requests }}</h2>
+                    <p>Requests awaiting your action</p>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- DONOR ACTION CARDS -->
+        <section class="dashboard-section">
+
+            <div class="dashboard-section-heading">
+                <div>
+                    <p class="section-eyebrow">DONOR WORKSPACE</p>
+                    <h2>Manage Your Food</h2>
+                    <p>Manage donations, recipient requests and your reputation.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- DONATE FOOD -->
+                <a href="{{ url_for('add_food') }}"
+                   class="dashboard-card">
+
+                    <span class="dashboard-icon">🍱</span>
+                    <h3>Donate Food</h3>
+
+                    <p>
+                        Share surplus food by adding its details, photo,
+                        quantity, expiry and pickup location.
+                    </p>
+
+                    <span class="card-link">
+                        Create a Donation →
+                    </span>
+                </a>
+
+
+                <!-- MY DONATIONS -->
+                <a href="{{ url_for('my_donations') }}"
+                   class="dashboard-card">
+
+                    <span class="dashboard-icon">📦</span>
+                    <h3>My Donations</h3>
+
+                    <p>
+                        Review your listings, pricing, available quantities
+                        and collection status.
+                    </p>
+
+                    <span class="card-link">
+                        View Donations →
+                    </span>
+                </a>
+
+
+                <!-- FOOD REQUESTS -->
+                <a href="{{ url_for('donor_requests') }}"
+                   class="dashboard-card request-action-card">
+
+                    <span class="dashboard-icon">📋</span>
+                    <h3>Food Requests</h3>
+
+                    <p>
+                        Review recipient requests and approve or reject
+                        requests awaiting your decision.
+                    </p>
+
+                    <span class="card-link">
+                        Manage Requests →
+                    </span>
+
+                    {% if pending_requests > 0 %}
+                        <span class="action-count">
+                            {{ pending_requests }} pending
+                        </span>
+                    {% endif %}
+                </a>
+
+
+                <!-- MY RATINGS AND REVIEWS -->
+                <a href="{{ url_for('my_reviews') }}"
+                   class="dashboard-card reviews-action-card">
+
+                    <span class="dashboard-icon">⭐</span>
+                    <h3>My Ratings &amp; Reviews</h3>
+
+                    <p>
+                        View your average donor rating, total reviews
+                        and feedback received from recipients.
+                    </p>
+
+                    <span class="card-link">
+                        View My Reviews →
+                    </span>
+                </a>
+
+
+                <!-- DONATION IMPACT -->
+                <article class="dashboard-card impact-card">
+
+                    <span class="dashboard-icon">💚</span>
+                    <h3>Your Donation Impact</h3>
+
+                    <div class="impact-stat">
+                        <span>Total listings</span>
+                        <strong>{{ stats[0] }}</strong>
+                    </div>
+
+                    <div class="impact-stat">
+                        <span>Available</span>
+                        <strong>{{ stats[1] }}</strong>
+                    </div>
+
+                    <div class="impact-stat">
+                        <span>Collected</span>
+                        <strong>{{ stats[3] }}</strong>
+                    </div>
+
+                    <p>Thank you for helping reduce food waste!</p>
+                </article>
+
+            </div>
+        </section>
+
+
+    <!-- =====================================
+         RECIPIENT DASHBOARD
+    ====================================== -->
+    {% elif role == "recipient" %}
+
+        <section class="dashboard-section">
+
+            <div class="dashboard-section-heading">
+                <div>
+                    <p class="section-eyebrow">RECIPIENT WORKSPACE</p>
+                    <h2>Your Food Dashboard</h2>
+                    <p>Find food, submit requests and track their progress.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid recipient-dashboard-grid">
+
+                <!-- BROWSE FOOD -->
+                <a href="{{ url_for('browse_food') }}"
+                   class="dashboard-card featured-dashboard-card">
+
+                    <span class="dashboard-icon">🔎</span>
+                    <h3>Browse Available Food</h3>
+
+                    <p>
+                        Explore food listings with photos, quantities,
+                        expiry dates, prices and pickup locations.
+                    </p>
+
+                    <span class="card-link">
+                        Explore Available Food →
+                    </span>
+                </a>
+
+                <div class="dashboard-card">
+    <h3>My Chats</h3>
+    <p>Coordinate food pickup with your approved donor.</p>
+    <a href="{{ url_for('my_chats') }}" class="btn">
+        Open My Chats
+    </a>
+</div>
+
+                <!-- MY FOOD REQUESTS -->
+                <a href="{{ url_for('my_food_requests') }}"
+                   class="dashboard-card">
+
+                    <span class="dashboard-icon">📝</span>
+                    <h3>My Food Requests</h3>
+
+                    <p>
+                        Track your requested food, quantities, request dates
+                        and donor approval status.
+                    </p>
+
+                    <span class="card-link">
+                        Track My Requests →
+                    </span>
+                </a>
+
+            </div>
+        </section>
+
+    {% endif %}
+
+
+    <!-- =====================================
+         ACCOUNT AND ROLE SETTINGS
+    ====================================== -->
+    <section class="account-dashboard-grid">
+
+        <!-- ACCOUNT INFORMATION -->
+        <article class="profile-section">
+
+            <div class="account-heading">
+                <span class="account-icon">👤</span>
+
+                <div>
+                    <p class="section-eyebrow">PERSONAL INFORMATION</p>
+                    <h2>My Account</h2>
+                </div>
+            </div>
+
+            <div class="account-detail">
+                <span>Full Name</span>
+                <strong>{{ full_name }}</strong>
+            </div>
+
+            <div class="account-detail">
+                <span>Email Address</span>
+                <strong>{{ email }}</strong>
+            </div>
+
+            <div class="account-detail">
+                <span>Current Role</span>
+                <strong>{{ role|title }}</strong>
+            </div>
+
+            <p class="account-privacy-note">
+                🔐 Your account information belongs to you.
+            </p>
+
+        </article>
+
+
+        <!-- ROLE SWITCH AND LOGOUT -->
+        <article class="role-switch-section">
+
+            <div class="account-heading">
+                <span class="account-icon">🔄</span>
+
+                <div>
+                    <p class="section-eyebrow">ACCOUNT SETTINGS</p>
+                    <h3>Switch Your Role</h3>
+                </div>
+            </div>
+
+            <p>
+                Use the same account to donate food or receive food.
+                Your account details will remain unchanged.
+            </p>
+
+            {% if role == "donor" %}
+
+                <form action="{{ url_for('switch_role') }}"
+                      method="POST">
+
+                    <input type="hidden"
+                           name="role"
+                           value="recipient">
+
+                    <button type="submit" class="btn role-switch-btn">
+                        Switch to Recipient →
+                    </button>
+
+                </form>
+
+            {% elif role == "recipient" %}
+
+                <form action="{{ url_for('switch_role') }}"
+                      method="POST">
+
+                    <input type="hidden"
+                           name="role"
+                           value="donor">
+
+                    <button type="submit" class="btn role-switch-btn">
+                        Switch to Donor →
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+            <div class="account-divider"></div>
+
+            <p class="logout-description">
+                Finished for now? You can securely log out of your account.
+            </p>
+
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="btn logout-btn">
+                    Logout
+                </button>
+            </form>
+
+        </article>
+
+    </section>
+
+</main>
+
+{% endblock %}

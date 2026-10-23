@@ -1,0 +1,127 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Food Requests | FoodShare{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/my_food_requests.css') }}">
+
+<section class="my-requests-page">
+
+    <div class="my-requests-header">
+        <div>
+            <h1>My Food Requests</h1>
+            <p>Track the food you have requested from donors.</p>
+        </div>
+
+        <a href="{{ url_for('browse_food') }}" class="browse-btn">
+            Browse More Food
+        </a>
+    </div>
+
+    {% if requests_list %}
+
+    <div class="my-requests-list">
+
+        {% for item in requests_list %}
+
+        <article class="my-request-card">
+
+            <div class="request-top">
+                <div>
+                    <h2>{{ item[1] }}</h2>
+                    <p class="request-date">
+                        Requested on: {{ item[5] }}
+                    </p>
+                </div>
+
+                <span class="request-status status-{{ item[4]|lower }}">
+                    {{ item[4]|capitalize }}
+                </span>
+            </div>
+
+            <div class="request-info">
+
+                <div>
+                    <span>Requested Quantity</span>
+                    <strong>{{ item[2] }} {{ item[3] }}</strong>
+                </div>
+
+                <div>
+                    <span>Food Type</span>
+                    <strong>
+                        {% if item[7] == 'paid' %}
+                            Paid
+                        {% else %}
+                            Free
+                        {% endif %}
+                    </strong>
+                </div>
+
+                {% if item[7] == 'paid' and item[8] is not none %}
+                <div>
+                    <span>Price per Unit</span>
+                    <strong>₹{{ "%.2f"|format(item[8]) }}</strong>
+                </div>
+                {% endif %}
+
+                <div>
+                    <span>Food Expiry</span>
+                    <strong>{{ item[6] }}</strong>
+                </div>
+
+            </div>
+
+            <div class="request-bottom">
+                <a href="{{ url_for('food_details', food_id=item[0]) }}"
+                   class="details-btn">
+                    View Food Details
+                </a>
+
+                {% if item[4]|lower == 'pending' %}
+                    <p class="status-message">
+                        Your request is waiting for donor approval.
+                    </p>
+                {% elif item[4]|lower == 'approved' %}
+                    <p class="status-message approved-message">
+                        Your request has been approved by the donor!
+                    </p>
+                {% elif item[4]|lower == 'rejected' %}
+                    <p class="status-message rejected-message">
+                        Your request was rejected. You can browse other food.
+                    </p>
+                {% elif item[4]|lower == 'completed' %}
+                    <p class="status-message completed-message">
+                        This request has been completed.
+                    </p>
+                {% endif %}
+            </div>
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="no-requests">
+        <div class="empty-icon">📋</div>
+        <h2>No Food Requests Yet</h2>
+        <p>
+            You haven't requested any food yet.
+            Browse available food and send your first request.
+        </p>
+
+        <a href="{{ url_for('browse_food') }}" class="browse-btn">
+            Explore Available Food
+        </a>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

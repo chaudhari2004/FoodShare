@@ -1,0 +1,529 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ food[1] }} | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/food_details.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% set donation_type = food[13] if food|length > 13 and food[13] else 'free' %}
+{% set price_per_unit = food[14]|float if food|length > 14 and food[14] is not none else 0 %}
+{% set remaining_quantity = food[15]|float if food|length > 15 and food[15] is not none else food[3]|float %}
+{% set total_listing_price = (food[3]|float) * price_per_unit %}
+{% set average_rating = rating_summary[0]|float if rating_summary else 0 %}
+{% set total_reviews = rating_summary[1]|int if rating_summary else 0 %}
+
+<section class="food-details-page">
+
+    <header class="details-page-header">
+        <a href="{{ url_for('browse_food') }}" class="details-back-link">
+            ← Back to Available Food
+        </a>
+        <p class="details-eyebrow">FOODSHARE / FOOD DETAILS</p>
+        <h1>Discover Your Donation 🍃</h1>
+        <p>Review the food, check its price and send a request for the quantity you need.</p>
+    </header>
+
+    <div class="food-details-grid">
+
+        <!-- Food Details -->
+        <article class="details-card food-main-card">
+            <div class="details-card-heading">
+                <span class="details-card-icon">🍱</span>
+                <div>
+                    <h2>Food Details</h2>
+                    <p>Information about this listing</p>
+                </div>
+            </div>
+
+            {% if food[8] %}
+            <img
+                src="{{ url_for('static', filename='uploads/foods/' ~ food[8]) }}"
+                alt="{{ food[1] }}"
+                class="details-food-image"
+            >
+            {% else %}
+            <div class="details-image-placeholder">
+                <span>🍲</span>
+                <p>No food photo available</p>
+            </div>
+            {% endif %}
+
+            <div class="details-food-title-row">
+                <h3>{{ food[1] }}</h3>
+                <span class="details-status status-{{ food[7]|lower }}">
+                    {{ food[7]|title }}
+                </span>
+            </div>
+
+            <p class="details-description">
+                {{ food[2] or "The donor has not provided a description." }}
+            </p>
+
+            <section class="details-price-panel" aria-label="Food pricing">
+                <div class="details-price-heading">
+                    <small>DONATION TYPE</small>
+                    {% if donation_type == 'paid' %}
+                    <span class="details-price-badge paid">₹ PAID FOOD</span>
+                    {% else %}
+                    <span class="details-price-badge free">✓ FREE DONATION</span>
+                    {% endif %}
+                </div>
+
+                {% if donation_type == 'paid' %}
+                <p class="details-price-label">Price per {{ food[4] }}</p>
+                <div class="details-unit-price">
+                    ₹{{ "%.2f"|format(price_per_unit) }}
+                    <span>/ {{ food[4] }}</span>
+                </div>
+                <div class="details-total-price">
+                    <span>Full listing value</span>
+                    <strong>₹{{ "%.2f"|format(total_listing_price) }}</strong>
+                </div>
+                <p class="details-price-note">
+                    Estimated value for the original donated quantity.
+                    Your estimated cost depends on the quantity requested.
+                </p>
+                {% else %}
+                <div class="details-unit-price">₹0.00 <span>/ {{ food[4] }}</span></div>
+                <div class="details-total-price">
+                    <span>Total cost</span>
+                    <strong>FREE</strong>
+                </div>
+                <p class="details-price-note">This food is offered free of charge.</p>
+                {% endif %}
+            </section>
+
+            <div class="details-info-item">
+                <span>📦</span>
+                <div>
+                    <small>Original Donated Quantity</small>
+                    <strong>{{ food[3] }} {{ food[4] }}</strong>
+                </div>
+            </div>
+
+            <div class="details-info-item">
+                <span>✅</span>
+                <div>
+                    <small>Remaining Quantity</small>
+                    <strong>{{ remaining_quantity|round(2) }} {{ food[4] }}</strong>
+                </div>
+            </div>
+
+            <div class="details-info-item">
+                <span>📍</span>
+                <div>
+                    <small>Pickup Location</small>
+                    <strong>{{ food[5] or "Location not provided" }}</strong>
+                </div>
+            </div>
+
+            <div class="details-info-item">
+                <span>⏰</span>
+                <div>
+                    <small>Expiry Date &amp; Time</small>
+                    <strong>{{ food[6] or "Not specified" }}</strong>
+                </div>
+            </div>
+
+            {% if food[9] %}
+            <div class="details-info-item">
+                <span>🗓️</span>
+                <div>
+                    <small>Listing Created</small>
+                    <strong>{{ food[9] }}</strong>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if donation_type == 'paid' %}
+            <div class="paid-donation-note">
+                <span>₹</span> This listing has a price set by the donor.
+            </div>
+            {% else %}
+            <div class="free-donation-note">
+                <span>✓</span> This food donation is free.
+            </div>
+            {% endif %}
+        </article>
+
+        <!-- Donor Details -->
+        <article class="details-card donor-details-card">
+            <div class="details-card-heading">
+                <span class="details-card-icon">👤</span>
+                <div>
+                    <h2>Donor Details</h2>
+                    <p>Know who is sharing the food</p>
+                </div>
+            </div>
+
+            <div class="donor-profile">
+                <div class="donor-profile-avatar">👤</div>
+                <h3>{{ food[10] or "FoodShare Donor" }}</h3>
+                <p>FoodShare Community Donor</p>
+            </div>
+
+            <!-- Donor Rating Summary -->
+            <div class="donor-rating-summary">
+                <h3>Donor Rating</h3>
+                <div class="rating-summary-value">
+                    <strong>{{ "%.1f"|format(average_rating) }}</strong>
+                    <span class="rating-stars" aria-label="{{ average_rating }} out of 5 stars">
+                        {% for star in range(1, 6) %}
+                            {% if average_rating >= star %}
+                            <span class="star-filled">★</span>
+                            {% elif average_rating >= star - 0.5 %}
+                            <span class="star-filled">★</span>
+                            {% else %}
+                            <span class="star-empty">★</span>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                <p>Based on {{ total_reviews }} {{ "review" if total_reviews == 1 else "reviews" }}</p>
+            </div>
+
+            <div class="donor-contact-section">
+                {% if contact_unlocked %}
+                <div class="contact-unlocked-message">
+                    <span>✓</span>
+                    <div>
+                        <strong>Contact Details Unlocked</strong>
+                        <p>Your food request has been approved.</p>
+                    </div>
+                </div>
+
+                <div class="details-info-item">
+                    <span>✉️</span>
+                    <div>
+                        <small>Email Address</small>
+                        <strong>{{ food[11] or "Not provided" }}</strong>
+                    </div>
+                </div>
+
+                <div class="details-info-item">
+                    <span>📞</span>
+                    <div>
+                        <small>Phone Number</small>
+                        <strong>{{ food[12] or "Not provided" }}</strong>
+                    </div>
+                </div>
+                {% else %}
+                <div class="contact-locked-message">
+                    <span class="lock-icon">🔒</span>
+                    <h3>Contact Details Protected</h3>
+                    <p>
+                        Submit a food request first. The donor's contact details
+                        become visible after the donor approves your request.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="donor-privacy-note">🔐 Your community's privacy matters.</div>
+        </article>
+
+        <!-- Request Food -->
+        <article class="details-card request-details-card">
+            <div class="details-card-heading">
+                <span class="details-card-icon">🤝</span>
+                <div>
+                    <h2>Request Food</h2>
+                    <p>Choose the quantity you need</p>
+                </div>
+            </div>
+
+            <section class="request-price-panel">
+                <small>
+                    {% if donation_type == 'paid' %}
+                    PRICE PER {{ food[4]|upper }}
+                    {% else %}
+                    DONATION PRICE
+                    {% endif %}
+                </small>
+                {% if donation_type == 'paid' %}
+                <div class="request-price-value">₹{{ "%.2f"|format(price_per_unit) }}</div>
+                <p>per {{ food[4] }}</p>
+                {% else %}
+                <div class="free-price">FREE</div>
+                <p>No payment required.</p>
+                {% endif %}
+            </section>
+
+            <div class="request-quantity-info">
+                <span>Available to request</span>
+                <strong>{{ remaining_quantity|round(2) }} {{ food[4] }}</strong>
+            </div>
+
+            {% if recipient_request %}
+            <div class="existing-request-panel">
+                <h3>Your Request Status</h3>
+                <span class="request-status request-status-{{ recipient_request[1]|lower }}">
+                    {{ recipient_request[1]|title }}
+                </span>
+                <p>
+                    Requested quantity:
+                    <strong>{{ recipient_request[0] }} {{ food[4] }}</strong>
+                </p>
+
+                {% if recipient_request[1] == 'pending' %}
+                <p>Your request is waiting for donor approval.</p>
+                {% elif recipient_request[1] == 'approved' %}
+                <p>Your request has been approved by the donor.</p>
+                {% elif recipient_request[1] == 'rejected' %}
+                <p>Your previous request was rejected. You may submit another request if food is still available.</p>
+                {% elif recipient_request[1] == 'completed' %}
+                <p>This request has been completed.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if food[7] == 'available' and remaining_quantity > 0 %}
+                {% if not recipient_request or recipient_request[1] == 'rejected' %}
+                <form
+                    action="{{ url_for('request_food', food_id=food[0]) }}"
+                    method="POST"
+                    class="food-request-form"
+                    id="foodRequestForm"
+                >
+                    <label for="requested_quantity">Quantity Required ({{ food[4] }})</label>
+                    <input
+                        type="number"
+                        id="requested_quantity"
+                        name="requested_quantity"
+                        min="0.01"
+                        max="{{ remaining_quantity }}"
+                        step="0.01"
+                        placeholder="Enter required quantity"
+                        required
+                    >
+                    <small class="request-quantity-help">
+                        Maximum quantity: {{ remaining_quantity|round(2) }} {{ food[4] }}
+                    </small>
+
+                    {% if donation_type == 'paid' %}
+                    <div class="requested-cost-panel">
+                        <div>
+                            <span>Price per unit</span>
+                            <strong>₹{{ "%.2f"|format(price_per_unit) }}</strong>
+                        </div>
+                        <div>
+                            <span>Estimated request cost</span>
+                            <strong id="requestedCost">₹0.00</strong>
+                        </div>
+                        <p>Estimate only. Confirm the final quantity and price with the donor.</p>
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="submit-food-request">Send Food Request →</button>
+                </form>
+
+                {% elif recipient_request[1] == 'pending' %}
+                <button type="button" class="request-disabled-button" disabled>Request Already Sent</button>
+
+                {% elif recipient_request[1] == 'approved' %}
+                <button type="button" class="request-disabled-button" disabled>Request Approved ✓</button>
+
+                {% elif recipient_request[1] == 'completed' %}
+                <button type="button" class="request-disabled-button" disabled>Request Completed ✓</button>
+                {% endif %}
+            {% else %}
+            <div class="food-unavailable-message">
+                <span>ℹ️</span>
+                <p>
+                    {% if remaining_quantity <= 0 %}
+                    All donated food has been allocated. No quantity is currently available.
+                    {% else %}
+                    This food is currently not available for new requests.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+
+            <p class="request-help-text">Your request will be sent to the donor for approval.</p>
+        </article>
+
+    </div>
+
+    <!-- Ratings & Reviews -->
+    <section class="food-reviews-section" id="reviews">
+        <header class="reviews-header">
+            <div>
+                <p class="details-eyebrow">COMMUNITY FEEDBACK</p>
+                <h2>Ratings &amp; Reviews ⭐</h2>
+                <p>See feedback from people who have completed a food exchange.</p>
+            </div>
+            <div class="reviews-header-rating">
+                <strong>{{ "%.1f"|format(average_rating) }}/5</strong>
+                <span>{{ total_reviews }} total reviews</span>
+            </div>
+        </header>
+
+        {% if can_review %}
+        <div class="review-form-card">
+            <h3>Share Your Experience</h3>
+            <p>Your food exchange is complete. How was your experience with this donor?</p>
+
+            <form
+                action="{{ url_for('submit_food_review', food_id=food[0]) }}"
+                method="POST"
+                id="foodReviewForm"
+            >
+                <fieldset class="review-rating-fieldset">
+                    <legend>Your Rating</legend>
+                    <div class="interactive-stars">
+                        {% for star in range(5, 0, -1) %}
+                        <input
+                            type="radio"
+                            id="rating-{{ star }}"
+                            name="rating"
+                            value="{{ star }}"
+                            required
+                        >
+                        <label for="rating-{{ star }}" title="{{ star }} out of 5 stars">★</label>
+                        {% endfor %}
+                    </div>
+                    <small>Select 1 to 5 stars.</small>
+                </fieldset>
+
+                <label for="review_text">Your Review (optional)</label>
+                <textarea
+                    id="review_text"
+                    name="review_text"
+                    rows="4"
+                    maxlength="1000"
+                    placeholder="Tell the community about your experience..."
+                ></textarea>
+                <small>Maximum 1000 characters.</small>
+
+                <button type="submit" class="submit-review-btn">Submit Rating &amp; Review</button>
+            </form>
+        </div>
+
+        {% elif already_reviewed %}
+        <div class="review-status-message review-success-message">
+            <span>✓</span>
+            <div>
+                <strong>Thank you for your feedback!</strong>
+                <p>You have already reviewed this food donation.</p>
+            </div>
+        </div>
+
+        {% elif recipient_request and recipient_request[1] == 'completed' %}
+        <div class="review-status-message">
+            Your review is not available for this donation.
+        </div>
+
+        {% else %}
+        <div class="review-status-message">
+            <span>🔒</span>
+            <div>
+                <strong>Review after your food exchange</strong>
+                <p>
+                    Once your request is marked completed, you can rate the donor
+                    and share your experience here.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="reviews-list">
+            <h3>Recent Reviews</h3>
+
+            {% if reviews %}
+                {% for review in reviews %}
+                <article class="review-card">
+                    <div class="review-card-header">
+                        <div class="reviewer-avatar">👤</div>
+                        <div class="reviewer-info">
+                            <strong>{{ review[3] }}</strong>
+                            <small>{{ review[2] }}</small>
+                        </div>
+                        <div class="review-card-stars" aria-label="{{ review[0] }} out of 5 stars">
+                            {% for star in range(1, 6) %}
+                                {% if star <= review[0]|int %}
+                                <span class="star-filled">★</span>
+                                {% else %}
+                                <span class="star-empty">★</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if review[1] %}
+                    <p class="review-card-text">{{ review[1] }}</p>
+                    {% else %}
+                    <p class="review-card-text review-no-text">
+                        The recipient left a star rating without a written comment.
+                    </p>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            {% else %}
+            <div class="no-reviews-message">
+                <span>⭐</span>
+                <h3>No reviews yet</h3>
+                <p>Be the first eligible recipient to review this donor.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <nav class="details-bottom-navigation">
+        <a href="{{ url_for('browse_food') }}">← Browse More Food</a>
+        <a href="{{ url_for('dashboard') }}">Go to Dashboard</a>
+    </nav>
+
+</section>
+
+{% if donation_type == 'paid' %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const quantityInput = document.getElementById("requested_quantity");
+    const costOutput = document.getElementById("requestedCost");
+
+    if (!quantityInput || !costOutput) {
+        return;
+    }
+
+    const pricePerUnit = {{ price_per_unit|tojson }};
+    const maximumQuantity = {{ remaining_quantity|tojson }};
+
+    quantityInput.addEventListener("input", function () {
+        const quantity = Number(quantityInput.value);
+
+        if (
+            !quantityInput.value ||
+            !Number.isFinite(quantity) ||
+            quantity <= 0
+        ) {
+            costOutput.textContent = "₹0.00";
+            return;
+        }
+
+        if (quantity > maximumQuantity) {
+            quantityInput.setCustomValidity(
+                "Maximum available quantity is " + maximumQuantity
+            );
+        } else {
+            quantityInput.setCustomValidity("");
+        }
+
+        const total = quantity * pricePerUnit;
+
+        costOutput.textContent = total.toLocaleString("en-IN", {
+            style: "currency",
+            currency: "INR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}

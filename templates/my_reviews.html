@@ -1,0 +1,116 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Ratings & Reviews | FoodShare{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/my_reviews.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="my-reviews-page">
+
+    <header class="my-reviews-header">
+        <a href="{{ url_for('dashboard') }}" class="reviews-back-link">
+            ← Back to Dashboard
+        </a>
+
+        <p class="reviews-eyebrow">FOODSHARE / DONOR FEEDBACK</p>
+        <h1>My Ratings &amp; Reviews ⭐</h1>
+        <p>See what recipients say about their food donation experience.</p>
+    </header>
+
+    <section class="reviews-summary-grid">
+
+        <article class="reviews-summary-card">
+            <span class="summary-icon">⭐</span>
+            <p>Average Rating</p>
+            <h2>{{ "%.1f"|format(summary[0]|float) }}<small>/5</small></h2>
+            <div class="summary-stars">★★★★★</div>
+        </article>
+
+        <article class="reviews-summary-card">
+            <span class="summary-icon">💬</span>
+            <p>Total Reviews</p>
+            <h2>{{ summary[1] }}</h2>
+            <small>Feedback received from recipients</small>
+        </article>
+
+    </section>
+
+    <section class="received-reviews-section">
+
+        <div class="received-reviews-heading">
+            <div>
+                <h2>Feedback from Recipients</h2>
+                <p>Your latest ratings and comments</p>
+            </div>
+            <span class="review-count">{{ summary[1] }} reviews</span>
+        </div>
+
+        {% if reviews %}
+
+            {% for review in reviews %}
+            <article class="received-review-card">
+
+                <div class="received-review-top">
+                    <div class="recipient-avatar">👤</div>
+
+                    <div class="recipient-reviewer">
+                        <strong>{{ review[3] }}</strong>
+                        <small>Food recipient</small>
+                    </div>
+
+                    <time>{{ review[2] }}</time>
+                </div>
+
+                <div class="received-review-rating"
+                     aria-label="{{ review[0] }} out of 5 stars">
+                    {% for star in range(1, 6) %}
+                        {% if star <= review[0]|int %}
+                            <span class="review-star-filled">★</span>
+                        {% else %}
+                            <span class="review-star-empty">★</span>
+                        {% endif %}
+                    {% endfor %}
+                    <strong>{{ review[0] }}/5</strong>
+                </div>
+
+                <p class="reviewed-food">
+                    Food listing: <strong>{{ review[4] }}</strong>
+                </p>
+
+                {% if review[1] %}
+                    <p class="received-review-text">{{ review[1] }}</p>
+                {% else %}
+                    <p class="received-review-text review-no-comment">
+                        No written comment was provided.
+                    </p>
+                {% endif %}
+
+            </article>
+            {% endfor %}
+
+        {% else %}
+
+            <div class="reviews-empty-state">
+                <span>🌱</span>
+                <h3>No reviews yet</h3>
+                <p>
+                    Once a recipient completes a food exchange and submits
+                    feedback, their review will appear here.
+                </p>
+                <a href="{{ url_for('my_donations') }}">
+                    View My Donations →
+                </a>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</section>
+
+{% endblock %}

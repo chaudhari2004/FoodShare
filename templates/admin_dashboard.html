@@ -1,0 +1,792 @@
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | FoodShare{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --fs-green: #176b45;
+    --fs-dark: #123b2a;
+    --fs-light: #edf8f0;
+    --fs-text: #20372b;
+    --fs-muted: #728176;
+    --fs-border: #e5ede7;
+    --fs-shadow: 0 10px 32px rgba(19, 59, 41, .07);
+}
+
+.admin-wrap {
+    width: min(1440px, 95%);
+    margin: 32px auto 60px;
+    color: var(--fs-text);
+}
+
+.admin-head {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 30px;
+    border-radius: 24px;
+    color: #fff;
+    background: linear-gradient(125deg, #103c2a, #176b45 65%, #279565);
+    box-shadow: 0 16px 40px rgba(23, 107, 69, .20);
+}
+
+.admin-head::after {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    right: -65px;
+    top: -130px;
+    border: 35px solid rgba(255,255,255,.08);
+    border-radius: 50%;
+}
+
+.admin-head h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(27px, 4vw, 39px);
+    letter-spacing: -.8px;
+}
+
+.admin-head p {
+    margin: 9px 0 0;
+    color: #d6f0df;
+    line-height: 1.6;
+}
+
+.admin-pill {
+    position: relative;
+    z-index: 1;
+    padding: 10px 15px;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.admin-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 30px 0 15px;
+}
+
+.admin-section-head h2 {
+    margin: 0;
+    color: var(--fs-dark);
+    font-size: 21px;
+}
+
+.admin-section-head p {
+    margin: 5px 0 0;
+    color: var(--fs-muted);
+    font-size: 13px;
+}
+
+.admin-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+.admin-kpi {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    padding: 21px;
+    border: 1px solid var(--fs-border);
+    border-radius: 19px;
+    background: #fff;
+    box-shadow: var(--fs-shadow);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.admin-kpi:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 34px rgba(19, 59, 41, .11);
+}
+
+.admin-kpi-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.admin-kpi-label {
+    color: var(--fs-muted);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.admin-kpi-icon {
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    background: var(--fs-light);
+    font-size: 21px;
+}
+
+.admin-kpi strong {
+    display: block;
+    margin-top: 18px;
+    color: var(--fs-dark);
+    font-size: clamp(25px, 2.5vw, 33px);
+    font-weight: 800;
+    letter-spacing: -.7px;
+    overflow-wrap: anywhere;
+}
+
+.admin-kpi small {
+    display: block;
+    margin-top: 7px;
+    color: var(--fs-muted);
+    font-size: 12px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 19px;
+    margin-top: 19px;
+}
+
+.admin-panel {
+    min-width: 0;
+    padding: 23px;
+    border: 1px solid var(--fs-border);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--fs-shadow);
+}
+
+.admin-panel-full {
+    margin-top: 19px;
+}
+
+.admin-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 19px;
+}
+
+.admin-panel h2 {
+    margin: 0;
+    color: var(--fs-dark);
+    font-size: 19px;
+}
+
+.admin-panel h3 {
+    margin: 23px 0 12px;
+    color: var(--fs-dark);
+    font-size: 15px;
+}
+
+.admin-muted {
+    color: var(--fs-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.admin-feature {
+    padding: 17px;
+    margin-top: 12px;
+    border: 1px solid #e0eee4;
+    border-radius: 15px;
+    background: linear-gradient(120deg, #f0faf3, #fff);
+}
+
+.admin-feature-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 9px;
+    color: var(--fs-green);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.admin-feature strong {
+    color: var(--fs-dark);
+    font-size: 16px;
+}
+
+.admin-stars {
+    color: #c18716;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.admin-list {
+    padding-left: 22px;
+    margin: 0;
+}
+
+.admin-list li {
+    padding: 9px 0;
+    border-bottom: 1px solid #edf2ee;
+    line-height: 1.6;
+}
+
+.admin-list li:last-child {
+    border-bottom: 0;
+}
+
+.admin-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--fs-border);
+    border-radius: 13px;
+}
+
+.admin-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 14px 13px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #edf2ee;
+}
+
+.admin-table th {
+    color: #496253;
+    background: #f5faf6;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.admin-table td {
+    overflow-wrap: anywhere;
+}
+
+.admin-table tbody tr:hover {
+    background: #f9fcfa;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-delete {
+    padding: 8px 12px;
+    border: 1px solid #f5d6d6;
+    border-radius: 9px;
+    background: #fff1f1;
+    color: #a52b2b;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.admin-delete:hover {
+    background: #ffe1e1;
+}
+
+.admin-contact {
+    color: var(--fs-green);
+    overflow-wrap: anywhere;
+}
+
+.admin-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: #edf8f0;
+    color: #176b45;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.admin-empty {
+    padding: 22px;
+    border-radius: 12px;
+    background: #f7faf8;
+    color: var(--fs-muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+.admin-search {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 13px;
+    border: 1px solid #dce7df;
+    border-radius: 10px;
+    outline: none;
+    font: inherit;
+    font-size: 13px;
+}
+
+.admin-search:focus {
+    border-color: var(--fs-green);
+    box-shadow: 0 0 0 3px rgba(23,107,69,.09);
+}
+
+.admin-review-text {
+    max-width: 300px;
+    white-space: normal;
+    line-height: 1.6;
+}
+
+.admin-footer-note {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border: 1px solid #e2ece4;
+    border-radius: 14px;
+    background: #f7faf8;
+    color: #65766a;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+@media (max-width: 1050px) {
+    .admin-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-head {
+        padding: 23px;
+    }
+
+    .admin-panel {
+        padding: 17px;
+    }
+}
+
+@media (max-width: 420px) {
+    .admin-kpis {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .admin-kpi {
+        padding: 13px;
+    }
+
+    .admin-kpi-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 17px;
+    }
+
+    .admin-kpi strong {
+        font-size: 22px;
+    }
+
+    .admin-kpi-label {
+        font-size: 11px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-wrap">
+
+    <header class="admin-head">
+        <div>
+            <h1>FoodShare Admin Dashboard</h1>
+            <p>Manage the community, monitor food donations and review platform activity.</p>
+        </div>
+        <span class="admin-pill">🔐 Administrator Control Center</span>
+    </header>
+
+    <div class="admin-section-head">
+        <div>
+            <h2>Platform Overview</h2>
+            <p>Key metrics across your FoodShare community.</p>
+        </div>
+    </div>
+
+    <div class="admin-kpis">
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Total Users</span>
+                <span class="admin-kpi-icon">👥</span>
+            </div>
+            <strong>{{ user_stats[0] }}</strong>
+            <small>Registered community members</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Donors</span>
+                <span class="admin-kpi-icon">🤲</span>
+            </div>
+            <strong>{{ user_stats[1] }}</strong>
+            <small>Members sharing surplus food</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Receivers</span>
+                <span class="admin-kpi-icon">🏠</span>
+            </div>
+            <strong>{{ user_stats[2] }}</strong>
+            <small>Members requesting food</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Food Listings</span>
+                <span class="admin-kpi-icon">🍱</span>
+            </div>
+            <strong>{{ food_stats[0] }}</strong>
+            <small>Total listings created</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Quantity Listed</span>
+                <span class="admin-kpi-icon">📦</span>
+            </div>
+            <strong>{{ "%.2f"|format(food_stats[1] or 0) }}</strong>
+            <small>Combined listing quantity</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Collected Listings</span>
+                <span class="admin-kpi-icon">✅</span>
+            </div>
+            <strong>{{ food_stats[2] }}</strong>
+            <small>Listings marked collected</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Food Requests</span>
+                <span class="admin-kpi-icon">📋</span>
+            </div>
+            <strong>{{ request_stats[0] }}</strong>
+            <small>Total requests submitted</small>
+        </article>
+
+        <article class="admin-kpi">
+            <div class="admin-kpi-top">
+                <span class="admin-kpi-label">Completed Requests</span>
+                <span class="admin-kpi-icon">🎯</span>
+            </div>
+            <strong>{{ request_stats[2] }}</strong>
+            <small>Requests marked completed</small>
+        </article>
+    </div>
+
+    <div class="admin-grid">
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>⭐ Donor Performance</h2>
+                    <p class="admin-muted">Ratings and contribution highlights</p>
+                </div>
+            </div>
+
+            {% if top_donor %}
+            <div class="admin-feature">
+                <div class="admin-feature-title">🏆 Highest-rated donor</div>
+                <strong>{{ top_donor[1] }}</strong>
+                <p class="admin-muted">
+                    <span class="admin-stars">★ {{ top_donor[3] }}/5</span>
+                    · {{ top_donor[4] }} review(s)
+                    <br>{{ top_donor[2] }}
+                </p>
+            </div>
+            {% else %}
+            <div class="admin-empty">No donor ratings submitted yet.</div>
+            {% endif %}
+
+            {% if lowest_donor %}
+            <div class="admin-feature">
+                <div class="admin-feature-title">📉 Lowest-rated donor</div>
+                <strong>{{ lowest_donor[1] }}</strong>
+                <p class="admin-muted">
+                    <span class="admin-stars">★ {{ lowest_donor[3] }}/5</span>
+                    · {{ lowest_donor[4] }} review(s)
+                    <br>{{ lowest_donor[2] }}
+                </p>
+            </div>
+            {% else %}
+            <div class="admin-empty">No donor ratings submitted yet.</div>
+            {% endif %}
+
+            <h3>Top 5 Donors by Listing Count</h3>
+            {% if top_donors %}
+            <ol class="admin-list">
+                {% for donor in top_donors %}
+                <li>
+                    <strong>{{ donor[1] }}</strong>
+                    <br>
+                    <span class="admin-muted">
+                        {{ donor[3] }} listing(s) ·
+                        {{ "%.2f"|format(donor[4] or 0) }} total quantity
+                    </span>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <div class="admin-empty">No food donations listed yet.</div>
+            {% endif %}
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <div>
+                    <h2>🏆 Review Highlights</h2>
+                    <p class="admin-muted">Best and lowest individual ratings</p>
+                </div>
+            </div>
+
+            {% if top_review %}
+            <div class="admin-feature">
+                <div class="admin-feature-title">🌟 Top-rated review</div>
+                <strong>
+                    <span class="admin-stars">★ {{ top_review[1] }}/5</span>
+                </strong>
+                <p class="admin-review-text">{{ top_review[2] or "No written comment." }}</p>
+                <div class="admin-muted">
+                    Given by <strong>{{ top_review[4] }}</strong> ({{ top_review[5] }})
+                    to <strong>{{ top_review[6] }}</strong> ({{ top_review[7] }})
+                    <br>Food: {{ top_review[8] }} · {{ top_review[3] }}
+                </div>
+            </div>
+            {% else %}
+            <div class="admin-empty">No reviews available yet.</div>
+            {% endif %}
+
+            {% if lowest_review %}
+            <div class="admin-feature">
+                <div class="admin-feature-title">⚠️ Lowest-rated review</div>
+                <strong>
+                    <span class="admin-stars">★ {{ lowest_review[1] }}/5</span>
+                </strong>
+                <p class="admin-review-text">{{ lowest_review[2] or "No written comment." }}</p>
+                <div class="admin-muted">
+                    Given by <strong>{{ lowest_review[4] }}</strong> ({{ lowest_review[5] }})
+                    to <strong>{{ lowest_review[6] }}</strong> ({{ lowest_review[7] }})
+                    <br>Food: {{ lowest_review[8] }} · {{ lowest_review[3] }}
+                </div>
+            </div>
+            {% else %}
+            <div class="admin-empty">No reviews available yet.</div>
+            {% endif %}
+        </section>
+
+    </div>
+
+    <section class="admin-panel admin-panel-full">
+        <div class="admin-panel-head">
+            <div>
+                <h2>👨‍🍳 Donor Directory</h2>
+                <p class="admin-muted">
+                    {{ donors|length }} donor account(s) · Contact information, listings and ratings
+                </p>
+            </div>
+            <input class="admin-search" type="search"
+                   placeholder="Search donors..." aria-label="Search donors"
+                   oninput="filterAdminTable(this, 'donor-table')">
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table" id="donor-table">
+                <thead>
+                    <tr>
+                        <th>Name / ID</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Listings</th>
+                        <th>Average Rating</th>
+                        <th>Reviews</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in donors %}
+                    <tr>
+                        <td>
+                            <strong>{{ d[1] }}</strong><br>
+                            <span class="admin-muted">#{{ d[0] }}</span>
+                        </td>
+                        <td><span class="admin-contact">{{ d[2] }}</span></td>
+                        <td>{{ d[3] or "—" }}</td>
+                        <td><span class="admin-badge">{{ d[4] }}</span></td>
+                        <td>
+                            {% if d[5] %}
+                            <span class="admin-stars">★ {{ d[5] }}/5</span>
+                            {% else %}
+                            <span class="admin-muted">No ratings</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ d[6] }}</td>
+                        <td>
+                            <form method="POST"
+                                  action="{{ url_for('admin_delete_user', user_id=d[0]) }}"
+                                  onsubmit="return confirm('Permanently delete this donor account? Related records may prevent deletion.');">
+                                <button class="admin-delete" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7">No donors registered.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-panel admin-panel-full">
+        <div class="admin-panel-head">
+            <div>
+                <h2>🤝 Receiver Directory</h2>
+                <p class="admin-muted">
+                    {{ receivers|length }} receiver account(s) · Request activity and received quantity
+                </p>
+            </div>
+            <input class="admin-search" type="search"
+                   placeholder="Search receivers..." aria-label="Search receivers"
+                   oninput="filterAdminTable(this, 'receiver-table')">
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table" id="receiver-table">
+                <thead>
+                    <tr>
+                        <th>Name / ID</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Requests</th>
+                        <th>Quantity Received</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in receivers %}
+                    <tr>
+                        <td>
+                            <strong>{{ u[1] }}</strong><br>
+                            <span class="admin-muted">#{{ u[0] }}</span>
+                        </td>
+                        <td><span class="admin-contact">{{ u[2] }}</span></td>
+                        <td>{{ u[3] or "—" }}</td>
+                        <td><span class="admin-badge">{{ u[4] }}</span></td>
+                        <td>{{ "%.2f"|format(u[5] or 0) }}</td>
+                        <td>
+                            <form method="POST"
+                                  action="{{ url_for('admin_delete_user', user_id=u[0]) }}"
+                                  onsubmit="return confirm('Permanently delete this receiver account? Related records may prevent deletion.');">
+                                <button class="admin-delete" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6">No receivers registered.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-panel admin-panel-full">
+        <div class="admin-panel-head">
+            <div>
+                <h2>📝 All Ratings & Reviews</h2>
+                <p class="admin-muted">
+                    {{ all_reviews|length }} review(s) · Review history across the platform
+                </p>
+            </div>
+            <input class="admin-search" type="search"
+                   placeholder="Search reviews..." aria-label="Search reviews"
+                   oninput="filterAdminTable(this, 'reviews-table')">
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table" id="reviews-table">
+                <thead>
+                    <tr>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Reviewer</th>
+                        <th>Donor / Recipient</th>
+                        <th>Food</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in all_reviews %}
+                    <tr>
+                        <td><span class="admin-stars">★ {{ r[1] }}/5</span></td>
+                        <td class="admin-review-text">{{ r[2] or "—" }}</td>
+                        <td>
+                            <strong>{{ r[4] }}</strong><br>
+                            <span class="admin-muted">{{ r[5] }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ r[6] }}</strong><br>
+                            <span class="admin-muted">{{ r[7] }}</span>
+                        </td>
+                        <td>{{ r[8] }}</td>
+                        <td>{{ r[3] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6">No reviews yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="admin-footer-note">
+        <strong>Admin note:</strong> User deletion may fail when related food listings,
+        requests or reviews are protected by foreign-key constraints. Review the related
+        records before deleting accounts. Keep administrator access restricted to trusted users.
+    </div>
+
+</section>
+
+<script>
+function filterAdminTable(input, tableId) {
+    const query = input.value.toLowerCase().trim();
+    const table = document.getElementById(tableId);
+
+    if (!table) return;
+
+    table.querySelectorAll("tbody tr").forEach(function (row) {
+        row.style.display = row.textContent.toLowerCase().includes(query)
+            ? ""
+            : "none";
+    });
+}
+</script>
+{% endblock %}
