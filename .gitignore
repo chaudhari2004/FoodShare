@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 *.log
 
+static/uploads/foods/
+static/uploads/chat_images/
+ca.pem
