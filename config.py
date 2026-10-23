@@ -1,19 +1,36 @@
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 import pymysql
 
-
-
-# Project root folder
-
+# Project root directory
 BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(BASE_DIR / ".env")
-# Load environment variables from .env
+
+# Load local .env file (Render uses Environment Variables)
 load_dotenv(BASE_DIR / ".env")
 
+# MySQL SSL CA certificate
+ca_value = os.getenv("DB_SSL_CA")
 
-# MySQL configuration
+if not ca_value:
+    raise RuntimeError(
+        "DB_SSL_CA is missing. Configure the Aiven CA certificate path."
+    )
+
+ca_path = Path(ca_value)
+
+# Resolve relative paths from the project root
+if not ca_path.is_absolute():
+    ca_path = BASE_DIR / ca_path
+
+# Never connect without the configured CA certificate
+if not ca_path.is_file():
+    raise FileNotFoundError(
+        f"Database CA certificate not found: {ca_path}"
+    )
+
+# MySQL connection configuration
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", "3306")),
@@ -24,6 +41,6 @@ DB_CONFIG = {
     "cursorclass": pymysql.cursors.Cursor,
     "autocommit": False,
     "ssl": {
-        "ca": os.getenv("DB_SSL_CA")
+        "ca": str(ca_path)
     },
 }
