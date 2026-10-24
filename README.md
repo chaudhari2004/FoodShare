@@ -190,7 +190,7 @@ B.Tech Student | Aspiring Software Developer
 Interested in Python, Flask, SQL, full-stack web development, and building technology-driven solutions to real-world problems.
 
 - 🌐 **Live Project:** [FoodShare](https://foodshare-81o9.onrender.com/about)
-- 💻 **GitHub:** [Add your GitHub profile URL here](https://github.com/)
+- 💻 **GitHub:** [https://github.com/chaudhari2004)
 
 ## 📄 License
 
