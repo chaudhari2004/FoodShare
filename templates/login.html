@@ -41,20 +41,27 @@
 
         <!-- Email -->
         <label for="email">Email Address</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            autocomplete="username"
-            value="{{ request.form.get('email', '') }}"
-            required
-        >
+
+        <div class="password-field fs-icon-field">
+            <span class="field-icon" aria-hidden="true">👤</span>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                autocomplete="username"
+                value="{{ request.form.get('email', '') }}"
+                required
+            >
+        </div>
 
         <!-- Password -->
         <label for="password">Password</label>
 
-        <div class="password-field">
+        <div class="password-field fs-icon-field">
+            <span class="field-icon" aria-hidden="true">🔒</span>
+
             <input
                 type="password"
                 id="password"
@@ -74,8 +81,6 @@
                 <svg
                     id="passwordEyeIcon"
                     xmlns="http://www.w3.org/2000/svg"
-                    width="21"
-                    height="21"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -117,6 +122,7 @@
 </section>
 
 <style>
+/* Error message */
 .login-error {
     display: flex;
     align-items: flex-start;
@@ -145,42 +151,90 @@
     font-weight: 700;
 }
 
+/* Shared email and password fields */
 .password-field {
     position: relative;
     width: 100%;
     margin-bottom: 18px;
 }
 
-.password-field input {
-    display: block;
+.fs-icon-field {
+    display: flex;
+    align-items: stretch;
     width: 100%;
     box-sizing: border-box;
-    padding-right: 48px;
+    border-radius: 4px;
 }
 
-.password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    display: inline-flex;
+/* Left-side icons */
+.fs-icon-field .field-icon {
+    flex: 0 0 38px;
+    min-height: 40px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    border: 0;
+    box-sizing: border-box;
+    background: rgba(100, 116, 139, 0.12);
+    border-right: 1px solid rgba(100, 116, 139, 0.2);
+    font-size: 16px;
+}
+
+/* Preserve the original input appearance */
+.fs-icon-field input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Reserve space for the eye icon */
+.fs-icon-field input#password {
+    padding-right: 48px !important;
+}
+
+/* Eye button: centered vertically and horizontally */
+.fs-icon-field .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    border: none;
     border-radius: 6px;
     background: transparent;
     color: #64748b;
     cursor: pointer;
+    z-index: 2;
 }
 
-.password-toggle:hover {
+.fs-icon-field .password-toggle svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    flex: 0 0 20px;
+    pointer-events: none;
+}
+
+.fs-icon-field .password-toggle:hover {
     color: #15803d;
+    background: rgba(22, 163, 74, 0.08);
 }
 
-.password-toggle:focus-visible {
+.fs-icon-field .password-toggle:focus-visible {
     outline: 2px solid #16a34a;
-    outline-offset: 2px;
+    outline-offset: -2px;
 }
 </style>
 
@@ -194,12 +248,14 @@
         return;
     }
 
-    const eyeOpen = `
+    // Open eye: password hidden
+    const eyeVisible = `
         <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/>
         <circle cx="12" cy="12" r="3"/>
     `;
 
-    const eyeClosed = `
+    // Crossed eye: password visible
+    const eyeHidden = `
         <path d="M3 3l18 18"/>
         <path d="M10.6 10.6a2 2 0 002.8 2.8"/>
         <path d="M9.9 5.2A10.8 10.8 0 0112 5c6.4 0 10 7 10 7a16 16 0 01-3 3.8"/>
@@ -207,21 +263,20 @@
     `;
 
     toggleButton.addEventListener("click", function () {
-        const showPassword = passwordInput.type === "password";
+        const shouldShow = passwordInput.type === "password";
 
-        passwordInput.type = showPassword ? "text" : "password";
+        passwordInput.type = shouldShow ? "text" : "password";
+        eyeIcon.innerHTML = shouldShow ? eyeHidden : eyeVisible;
 
         toggleButton.setAttribute(
             "aria-label",
-            showPassword ? "Hide password" : "Show password"
+            shouldShow ? "Hide password" : "Show password"
         );
 
         toggleButton.setAttribute(
             "aria-pressed",
-            String(showPassword)
+            String(shouldShow)
         );
-
-        eyeIcon.innerHTML = showPassword ? eyeClosed : eyeOpen;
     });
 })();
 </script>
