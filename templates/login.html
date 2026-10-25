@@ -5,42 +5,225 @@
 
 {% block content %}
 <section class="register-container">
-    <h1>{% if login_mode == 'admin' %}Admin Login{% else %}Welcome Back!{% endif %}</h1>
-    <p>{% if login_mode == 'admin' %}Sign in with your authorised administrator account.{% else %}Login to your FoodShare account as a donor or receiver.{% endif %}</p>
 
+    <h1>
+        {% if login_mode == 'admin' %}
+            Admin Login
+        {% else %}
+            Welcome Back!
+        {% endif %}
+    </h1>
+
+    <p>
+        {% if login_mode == 'admin' %}
+            Sign in with your authorised administrator account.
+        {% else %}
+            Login to your FoodShare account as a donor or receiver.
+        {% endif %}
+    </p>
+
+    <!-- Error Message -->
+    {% if error %}
+    <div class="login-error" role="alert" aria-live="polite">
+        <span class="login-error-icon" aria-hidden="true">!</span>
+        <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Login Form -->
     <form action="{{ url_for('login') }}" method="POST">
+
+        {% if login_mode == 'admin' %}
+        <input type="hidden" name="login_mode" value="admin">
+        {% else %}
+        <input type="hidden" name="login_mode" value="user">
+        {% endif %}
+
+        <!-- Email -->
         <label for="email">Email Address</label>
         <input
             type="email"
             id="email"
             name="email"
             placeholder="Enter your email"
+            autocomplete="username"
+            value="{{ request.form.get('email', '') }}"
             required
         >
 
+        <!-- Password -->
         <label for="password">Password</label>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-        >
 
+        <div class="password-field">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button
+                type="button"
+                class="password-toggle"
+                id="togglePassword"
+                aria-label="Show password"
+                aria-pressed="false"
+            >
+                <svg
+                    id="passwordEyeIcon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="21"
+                    height="21"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Login Button -->
         <button type="submit" class="btn">Login</button>
+
     </form>
 
+    <!-- Register / Admin Link -->
     {% if login_mode != 'admin' %}
-    <p>New to FoodShare?
+    <p>
+        New to FoodShare?
         <a href="{{ url_for('register') }}">Create an account</a>
     </p>
     {% else %}
-    <p><a href="{{ url_for('login', role='user') }}">Login as a user instead</a></p>
+    <p>
+        <a href="{{ url_for('login', role='user') }}">
+            Login as a user instead
+        </a>
+    </p>
     {% endif %}
+
+    <!-- Forgot Password -->
     <div class="forgot-password-link">
-    <a href="{{ url_for('forgot_password') }}">
-        Forgot Password?
-    </a>
-</div>
+        <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+    </div>
+
 </section>
+
+<style>
+.login-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 0;
+    padding: 12px 14px;
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid #dc2626;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.login-error-icon {
+    display: inline-flex;
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.password-field {
+    position: relative;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.password-field input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 48px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: #15803d;
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+}
+</style>
+
+<script>
+(function () {
+    const passwordInput = document.getElementById("password");
+    const toggleButton = document.getElementById("togglePassword");
+    const eyeIcon = document.getElementById("passwordEyeIcon");
+
+    if (!passwordInput || !toggleButton || !eyeIcon) {
+        return;
+    }
+
+    const eyeOpen = `
+        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/>
+        <circle cx="12" cy="12" r="3"/>
+    `;
+
+    const eyeClosed = `
+        <path d="M3 3l18 18"/>
+        <path d="M10.6 10.6a2 2 0 002.8 2.8"/>
+        <path d="M9.9 5.2A10.8 10.8 0 0112 5c6.4 0 10 7 10 7a16 16 0 01-3 3.8"/>
+        <path d="M6.6 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7a10 10 0 004-.8"/>
+    `;
+
+    toggleButton.addEventListener("click", function () {
+        const showPassword = passwordInput.type === "password";
+
+        passwordInput.type = showPassword ? "text" : "password";
+
+        toggleButton.setAttribute(
+            "aria-label",
+            showPassword ? "Hide password" : "Show password"
+        );
+
+        toggleButton.setAttribute(
+            "aria-pressed",
+            String(showPassword)
+        );
+
+        eyeIcon.innerHTML = showPassword ? eyeClosed : eyeOpen;
+    });
+})();
+</script>
+
 {% endblock %}

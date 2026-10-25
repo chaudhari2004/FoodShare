@@ -31,7 +31,10 @@ load_dotenv(BASE_DIR / ".env")
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-socketio = SocketIO(app, async_mode="threading")
+# Keep Socket.IO on HTTP long-polling for now. This avoids failed WebSocket
+# upgrade attempts in environments where the WebSocket transport is unavailable.
+# Re-enable upgrades after installing/configuring simple-websocket and testing.
+socketio = SocketIO(app, async_mode="threading", allow_upgrades=False)
 
 if not app.config["SECRET_KEY"]:
     raise RuntimeError("SECRET_KEY missing from .env")
@@ -395,9 +398,14 @@ def login():
     password = request.form.get("password", "")
 
     if not email or not password:
+        message = "Please enter both your email and password."
         if login_mode == "admin":
-            return render_template("admin_login.html", error="Enter both email and password."), 400
-        return "Email and password are required.", 400
+            return render_template("admin_login.html", error=message), 400
+        return render_template(
+            "login.html",
+            login_mode="user",
+            error=message,
+        ), 400
 
     # Admin authentication is independent of the users table.
     if login_mode == "admin":
@@ -426,7 +434,11 @@ def login():
             user = cursor.fetchone()
 
         if not user or not check_password_hash(user[3], password):
-            return "Invalid email or password.", 401
+            return render_template(
+                "login.html",
+                login_mode="user",
+                error="Invalid email or password. Please try again.",
+            ), 401
 
         session.clear()
         session["user_id"] = user[0]
